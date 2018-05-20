@@ -1,16 +1,16 @@
-#define NVIC_INT_CRL     0xE000Ed04 
-#define NVIC_PENDSVSET   0x10000000  //Ïò¼Ä´æÆ÷Ğ´ÈëÖµ
-#define NVIC_SYSPRI2     0xE000ED22
-#define NVIC_PENDSV_PRI  0x000000FF  //Ïò¼Ä´æÆ÷Ğ´ÈëÖµ
+#define NVIC_INT_CRL     0xE000Ed04  //ä¸­æ–­æ§åˆ¶ä¸çŠ¶æ€å¯„å­˜å™¨
+#define NVIC_PENDSVSET   0x10000000  //å‘å¯„å­˜å™¨å†™å…¥å€¼
+#define NVIC_SYSPRI2     0xE000ED22  //ç³»ç»Ÿä¼˜å…ˆå¯„å­˜å™¨
+#define NVIC_PENDSV_PRI  0x000000FF  //é…ç½®ä¼˜å…ˆçº§
 
 #define MEM32(addr)  *(volatile unsigned long *)(addr)
 #define MEME8(addr)  *(volatile unsigned char *)(addr)
 
-//Òì³£´¥·¢º¯Êı
+//å¼‚å¸¸è§¦å‘å‡½æ•°
 void triggerPendSVC(void)
 {
-	MEME8(NVIC_SYSPRI2)=NVIC_PENDSV_PRI;
-	MEM32(NVIC_INT_CRL)=NVIC_PENDSVSET;
+	MEME8(NVIC_SYSPRI2)=NVIC_PENDSV_PRI;   //æœ€ä½ä¼˜å…ˆçº§
+	MEM32(NVIC_INT_CRL)=NVIC_PENDSVSET;    //ç”¨äºPendSV
 }
 typedef struct _BlockType_t
 {
@@ -25,12 +25,12 @@ void delay(int count)
 
 int flag;
 
-//¶¨ÒåÒ»¸ö»º³åÇø
+//å®šä¹‰ä¸€ä¸ªç¼“å†²åŒº
 unsigned long stackBuffer[1024];
 BlockType_t block;
 int main()
 {
-	block.stackPtr = &stackBuffer[1024];//Ö¸Ïò×îºóÒ»¸öµ¥Ôª
+	block.stackPtr = &stackBuffer[1024];//æŒ‡å‘æœ€åä¸€ä¸ªå•å…ƒ
 	blockPtr = &block;
 	for(;;){
 		flag = 0;
