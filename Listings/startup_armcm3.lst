@@ -421,11 +421,11 @@ ARM Macro Assembler    Page 7
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\startup_armcm3.d -o.\objects\startup_armcm3.o -IC:\Users
-\Administrator\Desktop\RTOS\RTE -ID:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\In
-clude -ID:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include --predef
-ine="__UVISION_VERSION SETA 514" --predefine="_RTE_ SETA 1" --predefine="ARMCM3
- SETA 1" --list=.\listings\startup_armcm3.lst RTE\Device\ARMCM3\startup_ARMCM3.
-s
+\Administrator\Desktop\tinyOS\RTE -ID:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\
+Include -ID:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include --pred
+efine="__UVISION_VERSION SETA 514" --predefine="_RTE_ SETA 1" --predefine="ARMC
+M3 SETA 1" --list=.\listings\startup_armcm3.lst RTE\Device\ARMCM3\startup_ARMCM
+3.s
 
 
 
