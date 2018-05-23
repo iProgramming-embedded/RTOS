@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\tinyos.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\tinyos.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Tue May 22 22:05:26 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Wed May 23 22:35:44 2018
 <BR><P>
-<H3>Maximum Stack Usage =          8 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =         20 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-__rt_entry_sh &rArr; __user_setup_stackheap
+__rt_entry_main &rArr; main &rArr; tTaskInit
 <P>
 <H3>
 Mutually Recursive functions
@@ -60,8 +60,8 @@ Function Pointers
  <LI><a href="#[8]">UsageFault_Handler</a> from startup_armcm3.o(.text) referenced from startup_armcm3.o(RESET)
  <LI><a href="#[d]">WDT_IRQHandler</a> from startup_armcm3.o(.text) referenced from startup_armcm3.o(RESET)
  <LI><a href="#[28]">__main</a> from __main.o(!!!main) referenced from startup_armcm3.o(.text)
- <LI><a href="#[26]">task1</a> from main.o(i.task1) referenced from main.o(i.main)
- <LI><a href="#[27]">task2</a> from main.o(i.task2) referenced from main.o(i.main)
+ <LI><a href="#[26]">task1Entry</a> from main.o(i.task1Entry) referenced from main.o(i.main)
+ <LI><a href="#[27]">task2Entry</a> from main.o(i.task2Entry) referenced from main.o(i.main)
 </UL>
 <P>
 <H3>
@@ -175,7 +175,10 @@ Global Symbols
 <P><STRONG><a name="[5d]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[31]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
+<BR><BR>[Stack]<UL><LI>Max Depth = 20 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; tTaskInit
+</UL>
+<BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 <LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -195,7 +198,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sys_exit
 </UL>
 
-<P><STRONG><a name="[b]"></a>PendSV_Handler</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, switch.o(.emb_text))
+<P><STRONG><a name="[b]"></a>PendSV_Handler</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, switch.o(.emb_text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_armcm3.o(RESET)
 </UL>
 <P><STRONG><a name="[3]"></a>Reset_Handler</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, startup_armcm3.o(.text))
@@ -376,32 +379,40 @@ Global Symbols
 <P><STRONG><a name="[24]"></a>SystemInit</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, system_armcm3.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_armcm3.o(.text)
 </UL>
-<P><STRONG><a name="[3c]"></a>delay</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, main.o(i.delay))
-<BR><BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<P><STRONG><a name="[3d]"></a>delay</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, main.o(i.delay))
+<BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;task2Entry
+<LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;task1Entry
 </UL>
 
-<P><STRONG><a name="[32]"></a>main</STRONG> (Thumb, 72 bytes, Stack size 0 bytes, main.o(i.main))
-<BR><BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;triggerPendSVC
+<P><STRONG><a name="[32]"></a>main</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = main &rArr; tTaskInit
+</UL>
+<BR>[Calls]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tTaskRunFirst
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tTaskInit
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[3b]"></a>tTaskInit</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(i.tTaskInit))
+<P><STRONG><a name="[3b]"></a>tTaskInit</STRONG> (Thumb, 132 bytes, Stack size 12 bytes, main.o(i.tTaskInit))
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = tTaskInit
+</UL>
+<BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[3c]"></a>tTaskRunFirst</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, switch.o(i.tTaskRunFirst))
 <BR><BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[26]"></a>task1</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(i.task1))
+<P><STRONG><a name="[26]"></a>task1Entry</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, main.o(i.task1Entry))
+<BR><BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
+</UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
-<P><STRONG><a name="[27]"></a>task2</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(i.task2))
+<P><STRONG><a name="[27]"></a>task2Entry</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, main.o(i.task2Entry))
+<BR><BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
+</UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
-</UL>
-<P><STRONG><a name="[3d]"></a>triggerPendSVC</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, main.o(i.triggerPendSVC))
-<BR><BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
-<P>
+</UL><P>
 <H3>
 Local Symbols
 </H3><P>

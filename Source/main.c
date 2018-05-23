@@ -1,39 +1,56 @@
 #include"tinyOS.h"
 
-#define NVIC_INT_CRL     0xE000Ed04  //中断控制与状态寄存器
-#define NVIC_PENDSVSET   0x10000000  //向寄存器写入值
-#define NVIC_SYSPRI2     0xE000ED22  //系统优先寄存器
-#define NVIC_PENDSV_PRI  0x000000FF  //配置优先级
+tTask * currentTask;
+tTask * nextTask;
+tTask * taskTable[2];
 
-#define MEM32(addr)  *(volatile unsigned long *)(addr)
-#define MEME8(addr)  *(volatile unsigned char *)(addr)
+
 
 //异常触发函数
 void triggerPendSVC(void)
 {
-	MEME8(NVIC_SYSPRI2)=NVIC_PENDSV_PRI;   //最低优先级
-	MEM32(NVIC_INT_CRL)=NVIC_PENDSVSET;    //用于PendSV
+
 }
 
 void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * stack)
 {
+	*(--stack) = (unsigned long)(1<<24);
+	*(--stack) = (unsigned long)entry;
+	*(--stack) = (unsigned long)0x14;
+	*(--stack) = (unsigned long)0x12;
+	*(--stack) = (unsigned long)0x3;
+	*(--stack) = (unsigned long)0x2;
+	*(--stack) = (unsigned long)0x1;
+	*(--stack) = (unsigned long)param;   
+	
+	*(--stack) = (unsigned long)0x11;
+	*(--stack) = (unsigned long)0x10;
+	*(--stack) = (unsigned long)0x9;
+	*(--stack) = (unsigned long)0x8;
+	*(--stack) = (unsigned long)0x7;
+	*(--stack) = (unsigned long)0x6;
+	*(--stack) = (unsigned long)0x5;
+	*(--stack) = (unsigned long)0x4;
 	task->stack = stack;
 }
-typedef struct _BlockType_t
-{
-		unsigned long *stackPtr;
-}BlockType_t;
 
-BlockType_t *blockPtr;
+void tTaskSched()
+{
+	if(currentTask == taskTable[0])
+	{
+			nextTask = taskTable[1];
+	}
+	else{
+			nextTask = taskTable[0];
+	}
+	tTaskSwitch();
+}	
+
+
 void delay(int count)
 {
 	while(--count>0);
 }
-
-int flag;
-
-unsigned long stackBuffer[1024];
-BlockType_t block;
 
 tTask tTask1;
 tTask tTask2;
@@ -41,35 +58,42 @@ tTask tTask2;
 tTaskStack task1Env[1024];
 tTaskStack task2Env[1024];
 
-void task1 (void * param)
+int task1Flag;
+void task1Entry (void * param)
 {
 	for (;;)
 	{
+		task1Flag = 0;
+		delay(100);
+		task1Flag = 1;
+		delay(100);
 	}
 }
-
-void task2 (void * param)
+int task2Flag;
+void task2Entry (void * param)
 {
 	for (;;)
 	{
+		task2Flag = 0;
+		delay(100);
+		task2Flag = 1;
+		delay(100);
 	}
 }
 
 //定义一个缓冲区
-unsigned long stackBuffer[1024];
-BlockType_t block;
+
 int main()
 {
-	tTaskInit(&tTask1, task1, (void *)0x11111111, &task1Env[1024]);
-	tTaskInit(&tTask2, task2, (void *)0x22222222, &task2Env[1024]);
-	block.stackPtr = &stackBuffer[1024];//指向最后一个单元
-	blockPtr = &block;
-	for(;;){
-		flag = 0;
-		delay(100);
-		flag = 1;
-		delay(100);
-		
-		triggerPendSVC();
-	}
+	tTaskInit(&tTask1, task1Entry, (void *)0x11111111, &task1Env[1024]);
+	tTaskInit(&tTask2, task2Entry, (void *)0x22222222, &task2Env[1024]);
+	
+	taskTable[0] = &tTask1;
+	taskTable[1] = &tTask2;
+
+	nextTask = taskTable[0];
+	
+	tTaskRunFirst();
+	
+	return 0;
 }
