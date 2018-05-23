@@ -16,8 +16,13 @@ __asm void PendSV_Handler(void)   //异常处理函数
 	
 	MRS R0,PSP
 	CBZ R0,PendSVHander_nosave
-	NOP
+	//任务的保存操作
+	STMDB R0,{R4-R11}
 	
+	LDR R1,=currentTask
+	LDR R1,[R1]
+	STR R0,[R1]
+////////////////	
 PendSVHander_nosave
 	LDR R0,=currentTask
 	LDR R1,=nextTask

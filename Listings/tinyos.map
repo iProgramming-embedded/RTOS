@@ -13,8 +13,10 @@ Section Cross References
     main.o(i.tTaskSched) refers to switch.o(i.tTaskSwitch) for tTaskSwitch
     main.o(i.tTaskSched) refers to main.o(.data) for taskTable
     main.o(i.task1Entry) refers to main.o(i.delay) for delay
+    main.o(i.task1Entry) refers to main.o(i.tTaskSched) for tTaskSched
     main.o(i.task1Entry) refers to main.o(.data) for task1Flag
     main.o(i.task2Entry) refers to main.o(i.delay) for delay
+    main.o(i.task2Entry) refers to main.o(i.tTaskSched) for tTaskSched
     main.o(i.task2Entry) refers to main.o(.data) for task2Flag
     switch.o(.emb_text) refers to main.o(.data) for currentTask
     startup_armcm3.o(STACK) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
@@ -133,18 +135,16 @@ Section Cross References
 
 Removing Unused input sections from the image.
 
-    Removing main.o(i.tTaskSched), (52 bytes).
     Removing main.o(i.triggerPendSVC), (2 bytes).
     Removing switch.o(.rev16_text), (4 bytes).
     Removing switch.o(.revsh_text), (4 bytes).
     Removing switch.o(.rrx_text), (6 bytes).
-    Removing switch.o(i.tTaskSwitch), (16 bytes).
     Removing system_armcm3.o(.rev16_text), (4 bytes).
     Removing system_armcm3.o(.revsh_text), (4 bytes).
     Removing system_armcm3.o(.rrx_text), (6 bytes).
     Removing system_armcm3.o(i.SystemCoreClockUpdate), (16 bytes).
 
-10 unused section(s) (total 114 bytes) removed from the image.
+8 unused section(s) (total 46 bytes) removed from the image.
 
 ==============================================================================
 
@@ -155,51 +155,51 @@ Image Symbol Table
     Symbol Name                              Value     Ov Type        Size  Object(Section)
 
     RESET                                    0x00000000   Section      192  startup_armcm3.o(RESET)
-    ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit1.o ABSOLUTE
     ../clib/angel/boardlib.s                 0x00000000   Number         0  boardshut.o ABSOLUTE
-    ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit3.o ABSOLUTE
+    ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit1.o ABSOLUTE
     ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit2.o ABSOLUTE
+    ../clib/angel/boardlib.s                 0x00000000   Number         0  boardinit3.o ABSOLUTE
     ../clib/angel/handlers.s                 0x00000000   Number         0  __scatter_zi.o ABSOLUTE
     ../clib/angel/handlers.s                 0x00000000   Number         0  __scatter_copy.o ABSOLUTE
+    ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit2.o ABSOLUTE
+    ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry4.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry2.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry.o ABSOLUTE
     ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit.o ABSOLUTE
-    ../clib/angel/kernel.s                   0x00000000   Number         0  rtexit2.o ABSOLUTE
-    ../clib/angel/kernel.s                   0x00000000   Number         0  __rtentry4.o ABSOLUTE
     ../clib/angel/rt.s                       0x00000000   Number         0  rt_raise.o ABSOLUTE
     ../clib/angel/scatter.s                  0x00000000   Number         0  __scatter.o ABSOLUTE
     ../clib/angel/startup.s                  0x00000000   Number         0  __main.o ABSOLUTE
-    ../clib/angel/sys.s                      0x00000000   Number         0  use_no_semi.o ABSOLUTE
     ../clib/angel/sys.s                      0x00000000   Number         0  sys_stackheap_outer.o ABSOLUTE
     ../clib/angel/sys.s                      0x00000000   Number         0  indicate_semi.o ABSOLUTE
+    ../clib/angel/sys.s                      0x00000000   Number         0  use_no_semi.o ABSOLUTE
     ../clib/angel/sys.s                      0x00000000   Number         0  libspace.o ABSOLUTE
     ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_exit.o ABSOLUTE
     ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_wrch.o ABSOLUTE
     ../clib/angel/sysapp.c                   0x00000000   Number         0  sys_command.o ABSOLUTE
     ../clib/armsys.c                         0x00000000   Number         0  _get_argv_nomalloc.o ABSOLUTE
+    ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
+    ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
     ../clib/armsys.c                         0x00000000   Number         0  no_argv.o ABSOLUTE
-    ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
-    ../clib/armsys.c                         0x00000000   Number         0  argv_veneer.o ABSOLUTE
     ../clib/heapalloc.c                      0x00000000   Number         0  hrguard.o ABSOLUTE
     ../clib/heapaux.c                        0x00000000   Number         0  heapauxi.o ABSOLUTE
-    ../clib/libinit.s                        0x00000000   Number         0  libshutdown2.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libinit.o ABSOLUTE
-    ../clib/libinit.s                        0x00000000   Number         0  libinit2.o ABSOLUTE
+    ../clib/libinit.s                        0x00000000   Number         0  libshutdown2.o ABSOLUTE
     ../clib/libinit.s                        0x00000000   Number         0  libshutdown.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_exit.o ABSOLUTE
+    ../clib/libinit.s                        0x00000000   Number         0  libinit2.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_formal.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_outer.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_other.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_segv_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_cppl_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_pvfn_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_stak_inner.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_rtred_inner.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_abrt_inner.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_outer.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_formal.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_inner.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  __raise.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_fpe_inner.o ABSOLUTE
-    ../clib/signal.c                         0x00000000   Number         0  defsig_other.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_abrt_inner.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_exit.o ABSOLUTE
     ../clib/signal.c                         0x00000000   Number         0  defsig_general.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  __raise.o ABSOLUTE
+    ../clib/signal.c                         0x00000000   Number         0  defsig_rtmem_inner.o ABSOLUTE
     ../clib/signal.s                         0x00000000   Number         0  defsig.o ABSOLUTE
     ../clib/stdlib.c                         0x00000000   Number         0  exit.o ABSOLUTE
     ../fplib/fpinit.s                        0x00000000   Number         0  fpinit.o ABSOLUTE
@@ -254,22 +254,24 @@ Image Symbol Table
     .ARM.Collect$$rtexit$$00000002           0x00000150   Section        0  rtexit2.o(.ARM.Collect$$rtexit$$00000002)
     .ARM.Collect$$rtexit$$00000003           0x00000150   Section        4  rtexit2.o(.ARM.Collect$$rtexit$$00000003)
     .ARM.Collect$$rtexit$$00000004           0x00000154   Section        6  rtexit2.o(.ARM.Collect$$rtexit$$00000004)
-    .emb_text                                0x0000015c   Section       40  switch.o(.emb_text)
-    .text                                    0x00000184   Section       64  startup_armcm3.o(.text)
-    .text                                    0x000001c4   Section        0  heapauxi.o(.text)
-    .text                                    0x000001ca   Section       74  sys_stackheap_outer.o(.text)
-    .text                                    0x00000214   Section        0  exit.o(.text)
-    .text                                    0x00000220   Section        8  libspace.o(.text)
-    .text                                    0x00000228   Section        0  sys_exit.o(.text)
-    .text                                    0x00000234   Section        2  use_no_semi.o(.text)
-    .text                                    0x00000236   Section        0  indicate_semi.o(.text)
-    i.SystemInit                             0x00000238   Section        0  system_armcm3.o(i.SystemInit)
-    i.delay                                  0x00000248   Section        0  main.o(i.delay)
-    i.main                                   0x00000254   Section        0  main.o(i.main)
-    i.tTaskInit                              0x000002ac   Section        0  main.o(i.tTaskInit)
-    i.tTaskRunFirst                          0x00000330   Section        0  switch.o(i.tTaskRunFirst)
-    i.task1Entry                             0x0000034c   Section        0  main.o(i.task1Entry)
-    i.task2Entry                             0x0000036c   Section        0  main.o(i.task2Entry)
+    .emb_text                                0x0000015c   Section       48  switch.o(.emb_text)
+    .text                                    0x0000018c   Section       64  startup_armcm3.o(.text)
+    .text                                    0x000001cc   Section        0  heapauxi.o(.text)
+    .text                                    0x000001d2   Section       74  sys_stackheap_outer.o(.text)
+    .text                                    0x0000021c   Section        0  exit.o(.text)
+    .text                                    0x00000228   Section        8  libspace.o(.text)
+    .text                                    0x00000230   Section        0  sys_exit.o(.text)
+    .text                                    0x0000023c   Section        2  use_no_semi.o(.text)
+    .text                                    0x0000023e   Section        0  indicate_semi.o(.text)
+    i.SystemInit                             0x00000240   Section        0  system_armcm3.o(i.SystemInit)
+    i.delay                                  0x00000250   Section        0  main.o(i.delay)
+    i.main                                   0x0000025c   Section        0  main.o(i.main)
+    i.tTaskInit                              0x000002b4   Section        0  main.o(i.tTaskInit)
+    i.tTaskRunFirst                          0x00000338   Section        0  switch.o(i.tTaskRunFirst)
+    i.tTaskSched                             0x00000354   Section        0  main.o(i.tTaskSched)
+    i.tTaskSwitch                            0x00000388   Section        0  switch.o(i.tTaskSwitch)
+    i.task1Entry                             0x00000398   Section        0  main.o(i.task1Entry)
+    i.task2Entry                             0x000003c0   Section        0  main.o(i.task2Entry)
     .data                                    0x20000000   Section       32  main.o(.data)
     .data                                    0x20000020   Section        4  system_armcm3.o(.data)
     .bss                                     0x20000024   Section     8192  main.o(.bss)
@@ -364,61 +366,63 @@ Image Symbol Table
     __rt_exit_ls                             0x00000151   Thumb Code     0  rtexit2.o(.ARM.Collect$$rtexit$$00000003)
     __rt_exit_prels_1                        0x00000151   Thumb Code     0  rtexit2.o(.ARM.Collect$$rtexit$$00000002)
     __rt_exit_exit                           0x00000155   Thumb Code     0  rtexit2.o(.ARM.Collect$$rtexit$$00000004)
-    PendSV_Handler                           0x0000015d   Thumb Code    32  switch.o(.emb_text)
-    Reset_Handler                            0x00000185   Thumb Code     8  startup_armcm3.o(.text)
-    NMI_Handler                              0x0000018d   Thumb Code     2  startup_armcm3.o(.text)
-    HardFault_Handler                        0x0000018f   Thumb Code     2  startup_armcm3.o(.text)
-    MemManage_Handler                        0x00000191   Thumb Code     2  startup_armcm3.o(.text)
-    BusFault_Handler                         0x00000193   Thumb Code     2  startup_armcm3.o(.text)
-    UsageFault_Handler                       0x00000195   Thumb Code     2  startup_armcm3.o(.text)
-    SVC_Handler                              0x00000197   Thumb Code     2  startup_armcm3.o(.text)
-    DebugMon_Handler                         0x00000199   Thumb Code     2  startup_armcm3.o(.text)
-    SysTick_Handler                          0x0000019d   Thumb Code     2  startup_armcm3.o(.text)
-    AACI_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    CAN_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    CHLCD_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    CLCD_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    CPU_CLCD_IRQHandler                      0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    ENET_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    FLEXRAY_IRQHandler                       0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    I2C_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    LIN_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    MCIA_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    MCIB_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    RTC_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    SPI_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    TIM0_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    TIM2_IRQHandler                          0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    UART0_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    UART1_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    UART2_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    UART3_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    UART4_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    USBDC_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    USBHC_IRQHandler                         0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    WDT_IRQHandler                           0x0000019f   Thumb Code     0  startup_armcm3.o(.text)
-    __user_initial_stackheap                 0x000001a1   Thumb Code    10  startup_armcm3.o(.text)
-    __use_two_region_memory                  0x000001c5   Thumb Code     2  heapauxi.o(.text)
-    __rt_heap_escrow$2region                 0x000001c7   Thumb Code     2  heapauxi.o(.text)
-    __rt_heap_expand$2region                 0x000001c9   Thumb Code     2  heapauxi.o(.text)
-    __user_setup_stackheap                   0x000001cb   Thumb Code    74  sys_stackheap_outer.o(.text)
-    exit                                     0x00000215   Thumb Code    12  exit.o(.text)
-    __user_libspace                          0x00000221   Thumb Code     8  libspace.o(.text)
-    __user_perproc_libspace                  0x00000221   Thumb Code     0  libspace.o(.text)
-    __user_perthread_libspace                0x00000221   Thumb Code     0  libspace.o(.text)
-    _sys_exit                                0x00000229   Thumb Code     8  sys_exit.o(.text)
-    __I$use$semihosting                      0x00000235   Thumb Code     0  use_no_semi.o(.text)
-    __use_no_semihosting_swi                 0x00000235   Thumb Code     2  use_no_semi.o(.text)
-    __semihosting_library_function           0x00000237   Thumb Code     0  indicate_semi.o(.text)
-    SystemInit                               0x00000239   Thumb Code     8  system_armcm3.o(i.SystemInit)
-    delay                                    0x00000249   Thumb Code    10  main.o(i.delay)
-    main                                     0x00000255   Thumb Code    56  main.o(i.main)
-    tTaskInit                                0x000002ad   Thumb Code   132  main.o(i.tTaskInit)
-    tTaskRunFirst                            0x00000331   Thumb Code    24  switch.o(i.tTaskRunFirst)
-    task1Entry                               0x0000034d   Thumb Code    28  main.o(i.task1Entry)
-    task2Entry                               0x0000036d   Thumb Code    28  main.o(i.task2Entry)
-    Region$$Table$$Base                      0x0000038c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x000003ac   Number         0  anon$$obj.o(Region$$Table)
+    PendSV_Handler                           0x0000015d   Thumb Code    40  switch.o(.emb_text)
+    Reset_Handler                            0x0000018d   Thumb Code     8  startup_armcm3.o(.text)
+    NMI_Handler                              0x00000195   Thumb Code     2  startup_armcm3.o(.text)
+    HardFault_Handler                        0x00000197   Thumb Code     2  startup_armcm3.o(.text)
+    MemManage_Handler                        0x00000199   Thumb Code     2  startup_armcm3.o(.text)
+    BusFault_Handler                         0x0000019b   Thumb Code     2  startup_armcm3.o(.text)
+    UsageFault_Handler                       0x0000019d   Thumb Code     2  startup_armcm3.o(.text)
+    SVC_Handler                              0x0000019f   Thumb Code     2  startup_armcm3.o(.text)
+    DebugMon_Handler                         0x000001a1   Thumb Code     2  startup_armcm3.o(.text)
+    SysTick_Handler                          0x000001a5   Thumb Code     2  startup_armcm3.o(.text)
+    AACI_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    CAN_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    CHLCD_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    CLCD_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    CPU_CLCD_IRQHandler                      0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    ENET_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    FLEXRAY_IRQHandler                       0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    I2C_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    LIN_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    MCIA_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    MCIB_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    RTC_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    SPI_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    TIM0_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    TIM2_IRQHandler                          0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    UART0_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    UART1_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    UART2_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    UART3_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    UART4_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    USBDC_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    USBHC_IRQHandler                         0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    WDT_IRQHandler                           0x000001a7   Thumb Code     0  startup_armcm3.o(.text)
+    __user_initial_stackheap                 0x000001a9   Thumb Code    10  startup_armcm3.o(.text)
+    __use_two_region_memory                  0x000001cd   Thumb Code     2  heapauxi.o(.text)
+    __rt_heap_escrow$2region                 0x000001cf   Thumb Code     2  heapauxi.o(.text)
+    __rt_heap_expand$2region                 0x000001d1   Thumb Code     2  heapauxi.o(.text)
+    __user_setup_stackheap                   0x000001d3   Thumb Code    74  sys_stackheap_outer.o(.text)
+    exit                                     0x0000021d   Thumb Code    12  exit.o(.text)
+    __user_libspace                          0x00000229   Thumb Code     8  libspace.o(.text)
+    __user_perproc_libspace                  0x00000229   Thumb Code     0  libspace.o(.text)
+    __user_perthread_libspace                0x00000229   Thumb Code     0  libspace.o(.text)
+    _sys_exit                                0x00000231   Thumb Code     8  sys_exit.o(.text)
+    __I$use$semihosting                      0x0000023d   Thumb Code     0  use_no_semi.o(.text)
+    __use_no_semihosting_swi                 0x0000023d   Thumb Code     2  use_no_semi.o(.text)
+    __semihosting_library_function           0x0000023f   Thumb Code     0  indicate_semi.o(.text)
+    SystemInit                               0x00000241   Thumb Code     8  system_armcm3.o(i.SystemInit)
+    delay                                    0x00000251   Thumb Code    10  main.o(i.delay)
+    main                                     0x0000025d   Thumb Code    56  main.o(i.main)
+    tTaskInit                                0x000002b5   Thumb Code   132  main.o(i.tTaskInit)
+    tTaskRunFirst                            0x00000339   Thumb Code    24  switch.o(i.tTaskRunFirst)
+    tTaskSched                               0x00000355   Thumb Code    38  main.o(i.tTaskSched)
+    tTaskSwitch                              0x00000389   Thumb Code    10  switch.o(i.tTaskSwitch)
+    task1Entry                               0x00000399   Thumb Code    36  main.o(i.task1Entry)
+    task2Entry                               0x000003c1   Thumb Code    32  main.o(i.task2Entry)
+    Region$$Table$$Base                      0x000003e4   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x00000404   Number         0  anon$$obj.o(Region$$Table)
     currentTask                              0x20000000   Data           4  main.o(.data)
     nextTask                                 0x20000004   Data           4  main.o(.data)
     taskTable                                0x20000008   Data           8  main.o(.data)
@@ -440,9 +444,9 @@ Memory Map of the image
 
   Image Entry point : 0x000000c1
 
-  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x000003d0, Max: 0x00040000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00000428, Max: 0x00040000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x000003ac, Max: 0x00040000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x00000404, Max: 0x00040000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -493,25 +497,27 @@ Memory Map of the image
     0x00000150   0x00000004   Code   RO          247    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
     0x00000154   0x00000006   Code   RO          248    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
     0x0000015a   0x00000002   PAD
-    0x0000015c   0x00000028   Code   RO           64    .emb_text           switch.o
-    0x00000184   0x00000040   Code   RO          120    .text               startup_armcm3.o
-    0x000001c4   0x00000006   Code   RO          165    .text               c_w.l(heapauxi.o)
-    0x000001ca   0x0000004a   Code   RO          185    .text               c_w.l(sys_stackheap_outer.o)
-    0x00000214   0x0000000c   Code   RO          187    .text               c_w.l(exit.o)
-    0x00000220   0x00000008   Code   RO          195    .text               c_w.l(libspace.o)
-    0x00000228   0x0000000c   Code   RO          256    .text               c_w.l(sys_exit.o)
-    0x00000234   0x00000002   Code   RO          267    .text               c_w.l(use_no_semi.o)
-    0x00000236   0x00000000   Code   RO          269    .text               c_w.l(indicate_semi.o)
-    0x00000236   0x00000002   PAD
-    0x00000238   0x00000010   Code   RO          128    i.SystemInit        system_armcm3.o
-    0x00000248   0x0000000a   Code   RO            1    i.delay             main.o
-    0x00000252   0x00000002   PAD
-    0x00000254   0x00000058   Code   RO            2    i.main              main.o
-    0x000002ac   0x00000084   Code   RO            3    i.tTaskInit         main.o
-    0x00000330   0x0000001c   Code   RO           65    i.tTaskRunFirst     switch.o
-    0x0000034c   0x00000020   Code   RO            5    i.task1Entry        main.o
-    0x0000036c   0x00000020   Code   RO            6    i.task2Entry        main.o
-    0x0000038c   0x00000020   Data   RO          321    Region$$Table       anon$$obj.o
+    0x0000015c   0x00000030   Code   RO           64    .emb_text           switch.o
+    0x0000018c   0x00000040   Code   RO          120    .text               startup_armcm3.o
+    0x000001cc   0x00000006   Code   RO          165    .text               c_w.l(heapauxi.o)
+    0x000001d2   0x0000004a   Code   RO          185    .text               c_w.l(sys_stackheap_outer.o)
+    0x0000021c   0x0000000c   Code   RO          187    .text               c_w.l(exit.o)
+    0x00000228   0x00000008   Code   RO          195    .text               c_w.l(libspace.o)
+    0x00000230   0x0000000c   Code   RO          256    .text               c_w.l(sys_exit.o)
+    0x0000023c   0x00000002   Code   RO          267    .text               c_w.l(use_no_semi.o)
+    0x0000023e   0x00000000   Code   RO          269    .text               c_w.l(indicate_semi.o)
+    0x0000023e   0x00000002   PAD
+    0x00000240   0x00000010   Code   RO          128    i.SystemInit        system_armcm3.o
+    0x00000250   0x0000000a   Code   RO            1    i.delay             main.o
+    0x0000025a   0x00000002   PAD
+    0x0000025c   0x00000058   Code   RO            2    i.main              main.o
+    0x000002b4   0x00000084   Code   RO            3    i.tTaskInit         main.o
+    0x00000338   0x0000001c   Code   RO           65    i.tTaskRunFirst     switch.o
+    0x00000354   0x00000034   Code   RO            4    i.tTaskSched        main.o
+    0x00000388   0x00000010   Code   RO           66    i.tTaskSwitch       switch.o
+    0x00000398   0x00000028   Code   RO            5    i.task1Entry        main.o
+    0x000003c0   0x00000024   Code   RO            6    i.task2Entry        main.o
+    0x000003e4   0x00000020   Data   RO          321    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x00003088, Max: 0x00020000, ABSOLUTE)
@@ -534,13 +540,13 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       294         40          0         32       8192       7906   main.o
+       358         54          0         32       8192       8379   main.o
         64         26        192          0       4096        832   startup_armcm3.o
-        68         12          0          0          0       2216   switch.o
+        92         18          0          0          0       2606   switch.o
         16          8          0          4          0        643   system_armcm3.o
 
     ----------------------------------------------------------------------
-       444         86        224         36      12288      11597   Object Totals
+       532        106        224         36      12288      12460   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          2          0          0          0          0          0   (incl. Padding)
 
@@ -589,15 +595,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-       716        102        224         36      12388      11701   Grand Totals
-       716        102        224         36      12388      11701   ELF Image Totals
-       716        102        224         36          0          0   ROM Totals
+       804        122        224         36      12388      12460   Grand Totals
+       804        122        224         36      12388      12460   ELF Image Totals
+       804        122        224         36          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                  940 (   0.92kB)
+    Total RO  Size (Code + RO Data)                 1028 (   1.00kB)
     Total RW  Size (RW Data + ZI Data)             12424 (  12.13kB)
-    Total ROM Size (Code + RO Data + RW Data)        976 (   0.95kB)
+    Total ROM Size (Code + RO Data + RW Data)       1064 (   1.04kB)
 
 ==============================================================================
 

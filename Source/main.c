@@ -61,12 +61,16 @@ tTaskStack task2Env[1024];
 int task1Flag;
 void task1Entry (void * param)
 {
+	unsigned long value = *(unsigned long *)param;
+	value++;  //测试参数，第一个参数存放到之中
 	for (;;)
 	{
 		task1Flag = 0;
 		delay(100);
 		task1Flag = 1;
 		delay(100);
+		
+		tTaskSched();
 	}
 }
 int task2Flag;
@@ -78,6 +82,8 @@ void task2Entry (void * param)
 		delay(100);
 		task2Flag = 1;
 		delay(100);
+		
+		tTaskSched();
 	}
 }
 
