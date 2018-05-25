@@ -3,6 +3,7 @@
 
 tTask * currentTask;
 tTask * nextTask;
+tTask * idleTask;
 tTask * taskTable[2];
 
 
@@ -33,20 +34,67 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * 
 	*(--stack) = (unsigned long)0x5;
 	*(--stack) = (unsigned long)0x4;
 	task->stack = stack;
+	task->delayTicks = 0;
 }
 
 void tTaskSched()
 {
-	if(currentTask == taskTable[0])
+	if(currentTask == idleTask)
 	{
+		if(taskTable[0]->delayTicks ==0)
+		{
+			nextTask = taskTable[0];
+		}
+		else if(taskTable[1]->delayTicks==0){
 			nextTask = taskTable[1];
+		}
+		else{
+			return;
+		}
 	}
 	else{
-			nextTask = taskTable[0];
+		if(currentTask == taskTable[0]){
+			if(taskTable[1]->delayTicks ==0){
+				nextTask =taskTable[1];
+			}
+			else if(currentTask->delayTicks!=0){
+				nextTask =idleTask;
+			}
+			else{
+				return;
+			}
+		}
+		else if(currentTask == taskTable[1]){
+			if(taskTable[1]->delayTicks==0){
+				nextTask = taskTable[0];
+			}
+			else if(currentTask->delayTicks!=0){
+				nextTask =idleTask;
+			}
+			else{
+				return;
+			}
+		}
 	}
 	tTaskSwitch();
 }	
 
+void tTaskSystemTickHandler()
+{
+	int i;
+	for(i=0;i<2;i++)
+	{
+			if(taskTable[i]->delayTicks>0){
+				taskTable[i]->delayTicks--;
+			}//任务需要延时，时间频率递减
+	}
+}
+
+void tTaskDelay(uint32_t delay)
+{
+	currentTask->delayTicks=delay;
+	tTaskSched();
+}
 void tSetSysTickPeriod(uint32_t ms)
 {
 	SysTick->LOAD = ms * SystemCoreClock / 1000-1;
@@ -59,7 +107,8 @@ void tSetSysTickPeriod(uint32_t ms)
 
 void SysTick_Handler()
 {
-	tTaskSched();
+	//tTaskSched();
+	tTaskSystemTickHandler();
 }
 
 void delay(int count)
@@ -67,11 +116,6 @@ void delay(int count)
 	while(--count>0);
 }
 
-tTask tTask1;
-tTask tTask2;
-
-tTaskStack task1Env[1024];
-tTaskStack task2Env[1024];
 
 int task1Flag;
 void task1Entry (void * param)
@@ -101,6 +145,23 @@ void task2Entry (void * param)
 	}
 }
 
+tTask tTask1;
+tTask tTask2;
+
+tTaskStack task1Env[1024];
+tTaskStack task2Env[1024];
+
+//添加空闲任务
+tTask tTaskIdle;
+tTaskStack idleTaskEnv[1024];
+
+void idleTaskEntry(void * param)
+{
+	for(;;)
+	{
+	}
+}
+
 //定义一个缓冲区
 
 int main()
@@ -111,7 +172,9 @@ int main()
 	taskTable[0] = &tTask1;
 	taskTable[1] = &tTask2;
 
+	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, &idleTaskEnv[1024]);
 	nextTask = taskTable[0];
+	idleTask = &tTaskIdle;
 	
 	tTaskRunFirst();
 	
