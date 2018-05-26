@@ -6,7 +6,7 @@ tTask * nextTask;
 tTask * idleTask;
 tTask * taskTable[2];
 
-
+uint32_t tickCounter;
 
 //异常触发函数
 void triggerPendSVC(void)
@@ -39,6 +39,8 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * 
 
 void tTaskSched()
 {
+	uint32_t status = tTaskEnterCritical();
+	
 	if(currentTask == idleTask)
 	{
 		if(taskTable[0]->delayTicks ==0)
@@ -49,6 +51,7 @@ void tTaskSched()
 			nextTask = taskTable[1];
 		}
 		else{
+			tTaskExitCritical(status);
 			return;
 		}
 	}
@@ -61,6 +64,7 @@ void tTaskSched()
 				nextTask =idleTask;
 			}
 			else{
+				tTaskExitCritical(status);
 				return;
 			}
 		}
@@ -72,27 +76,38 @@ void tTaskSched()
 				nextTask =idleTask;
 			}
 			else{
+				tTaskExitCritical(status);
 				return;
 			}
 		}
 	}
 	tTaskSwitch();
+	tTaskExitCritical(status);
 }	
 
 void tTaskSystemTickHandler()
 {
 	int i;
+	
+	uint32_t status = tTaskEnterCritical();
 	for(i=0;i<2;i++)
 	{
 			if(taskTable[i]->delayTicks>0){
 				taskTable[i]->delayTicks--;
 			}//任务需要延时，时间频率递减
 	}
+	
+	tickCounter++;
+	tTaskExitCritical(status);
+	
+	tTaskSched();
 }
 
 void tTaskDelay(uint32_t delay)
 {
+	uint32_t status = tTaskEnterCritical();
 	currentTask->delayTicks=delay;
+	tTaskExitCritical(status);
 	tTaskSched();
 }
 void tSetSysTickPeriod(uint32_t ms)
@@ -138,6 +153,15 @@ void task2Entry (void * param)
 	
 	for (;;)
 	{
+		uint32_t i;
+		
+		uint32_t status = tTaskEnterCritical();
+		
+		uint32_t counter = tickCounter;
+		for(i=0;i<0xffff;i++){}
+		tickCounter =counter +1;
+			
+		tTaskExitCritical(status);
 		task2Flag = 0;
 		delay(100);
 		task2Flag = 1;

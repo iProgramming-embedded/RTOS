@@ -8,6 +8,19 @@
 
 #define MEM32(addr)  *(volatile unsigned long *)(addr)
 #define MEME8(addr)  *(volatile unsigned char *)(addr)
+
+uint32_t tTaskEnterCritical (void)
+{
+	uint32_t primask = __get_PRIMASK();
+	__disable_irq();
+	return primask;
+}
+//退出临界区
+void tTaskExitCritical (uint32_t status)
+{
+	__set_PRIMASK(status);
+}
+
 //内嵌汇编
 __asm void PendSV_Handler(void)   //异常处理函数
 {
