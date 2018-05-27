@@ -5,9 +5,8 @@ tTask * currentTask;
 tTask * nextTask;
 tTask * idleTask;
 tTask * taskTable[2];
-
-uint32_t tickCounter;
-
+//调度锁计数器
+uint8_t schedLockCount;
 //异常触发函数
 void triggerPendSVC(void)
 {
@@ -37,10 +36,43 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * 
 	task->delayTicks = 0;
 }
 
+//锁定计数器初始化
+void tTaskSchedInit(void)
+{
+	schedLockCount = 0;
+}
+
+//上锁，禁止调度函数
+void tTaskSchedDisable(void)
+{
+	uint32_t status= tTaskEnterCritical();
+	
+	if(schedLockCount < 255){
+		schedLockCount++;
+	}
+	
+	tTaskExitCritical(status);
+}
+void tTaskSchedEnable()
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	if(schedLockCount > 0){
+		if(--schedLockCount == 0){
+			tTaskSched();
+		}
+	}
+	
+	tTaskExitCritical(status);
+}
 void tTaskSched()
 {
 	uint32_t status = tTaskEnterCritical();
 	
+	if(schedLockCount > 0){
+		tTaskExitCritical(status);
+		return;
+	}
 	if(currentTask == idleTask)
 	{
 		if(taskTable[0]->delayTicks ==0)
@@ -97,7 +129,6 @@ void tTaskSystemTickHandler()
 			}//任务需要延时，时间频率递减
 	}
 	
-	tickCounter++;
 	tTaskExitCritical(status);
 	
 	tTaskSched();
@@ -126,6 +157,7 @@ void SysTick_Handler()
 	tTaskSystemTickHandler();
 }
 
+int shareCount;
 void delay(int count)
 {
 	while(--count>0);
@@ -140,10 +172,20 @@ void task1Entry (void * param)
 	tSetSysTickPeriod(10);//
 	for (;;)
 	{
+		int var;
+		
+		tTaskSchedDisable();
+		var = shareCount;
+		
 		task1Flag = 0;
-		delay(100);
+		tTaskDelay(1);
+		
+		var++;
+		shareCount = var;
+		
+		tTaskSchedEnable();
 		task1Flag = 1;
-		delay(100);
+		tTaskDelay(1);
 		
 	}
 }
@@ -153,19 +195,14 @@ void task2Entry (void * param)
 	
 	for (;;)
 	{
-		uint32_t i;
+		tTaskSchedDisable();
+		shareCount++;
+		tTaskSchedEnable();
 		
-		uint32_t status = tTaskEnterCritical();
-		
-		uint32_t counter = tickCounter;
-		for(i=0;i<0xffff;i++){}
-		tickCounter =counter +1;
-			
-		tTaskExitCritical(status);
 		task2Flag = 0;
-		delay(100);
+		tTaskDelay(1);
 		task2Flag = 1;
-		delay(100);	
+		tTaskDelay(1);	
 	}
 }
 
@@ -190,6 +227,7 @@ void idleTaskEntry(void * param)
 
 int main()
 {
+	tTaskSchedInit();
 	tTaskInit(&tTask1, task1Entry, (void *)0x11111111, &task1Env[1024]);
 	tTaskInit(&tTask2, task2Entry, (void *)0x22222222, &task2Env[1024]);
 	
