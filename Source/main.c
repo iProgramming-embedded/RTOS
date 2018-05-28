@@ -157,33 +157,39 @@ void SysTick_Handler()
 	tTaskSystemTickHandler();
 }
 
-int shareCount;
+
 void delay(int count)
 {
 	while(--count>0);
 }
 
-
+int firstSet;
 int task1Flag;
 void task1Entry (void * param)
 {
 	//unsigned long value = *(unsigned long *)param;
 	//value++;  //测试参数，第一个参数存放到之中
+	tBitmap bitmap;
+	int i;
+	tBitmapInit(&bitmap);
+	
+	for(i = tBitmapPosCount()-1;i>=0;i--){
+		tBitmapSet(&bitmap,i);
+		
+		firstSet = tBitmapGetFirstSet(&bitmap);
+	}
+	
+	for(i=0;i<tBitmapPosCount();i++)
+	{
+		tBitmapClear(&bitmap,i);
+		firstSet = tBitmapGetFirstSet(&bitmap);
+	}
 	tSetSysTickPeriod(10);//
 	for (;;)
 	{
-		int var;
-		
-		tTaskSchedDisable();
-		var = shareCount;
-		
+	
 		task1Flag = 0;
 		tTaskDelay(1);
-		
-		var++;
-		shareCount = var;
-		
-		tTaskSchedEnable();
 		task1Flag = 1;
 		tTaskDelay(1);
 		
@@ -195,9 +201,6 @@ void task2Entry (void * param)
 	
 	for (;;)
 	{
-		tTaskSchedDisable();
-		shareCount++;
-		tTaskSchedEnable();
 		
 		task2Flag = 0;
 		tTaskDelay(1);
