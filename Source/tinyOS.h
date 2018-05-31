@@ -3,12 +3,14 @@
 
 #include <stdint.h>
 #include "tLib.h"
+#include "tConfig.h"
 
 typedef uint32_t tTaskStack;
 
 typedef struct _tTask {
 	tTaskStack * stack;
 	uint32_t delayTicks;  //软延时计数器
+	uint32_t prio;   //添加优先级字段
 }tTask;
 
 extern tTask * currentTask;

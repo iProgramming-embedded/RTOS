@@ -4,7 +4,10 @@
 tTask * currentTask;
 tTask * nextTask;
 tTask * idleTask;
-tTask * taskTable[2];
+
+//优先级位图
+tBitmap taskPrioBitmap;
+tTask * taskTable[TINYOS_PRO_COUNT];
 //调度锁计数器
 uint8_t schedLockCount;
 //异常触发函数
@@ -13,7 +16,7 @@ void triggerPendSVC(void)
 
 }
 
-void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * stack)
+void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack)
 {
 	*(--stack) = (unsigned long)(1<<24);
 	*(--stack) = (unsigned long)entry;
@@ -34,12 +37,22 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, tTaskStack * 
 	*(--stack) = (unsigned long)0x4;
 	task->stack = stack;
 	task->delayTicks = 0;
+	task->prio = prio;
+	
+	taskTable[prio] = task;
+	tBitmapSet(&taskPrioBitmap,prio);
 }
 
+tTask * tTaskHighestReady(void)
+{
+	uint32_t highestPrio = tBitmapGetFirstSet(&taskPrioBitmap);
+	return taskTable[highestPrio];
+}
 //锁定计数器初始化
 void tTaskSchedInit(void)
 {
 	schedLockCount = 0;
+	tBitmapInit(&taskPrioBitmap);
 }
 
 //上锁，禁止调度函数
@@ -67,53 +80,19 @@ void tTaskSchedEnable()
 }
 void tTaskSched()
 {
+	tTask * tempTask;
 	uint32_t status = tTaskEnterCritical();
 	
 	if(schedLockCount > 0){
 		tTaskExitCritical(status);
 		return;
 	}
-	if(currentTask == idleTask)
-	{
-		if(taskTable[0]->delayTicks ==0)
-		{
-			nextTask = taskTable[0];
-		}
-		else if(taskTable[1]->delayTicks==0){
-			nextTask = taskTable[1];
-		}
-		else{
-			tTaskExitCritical(status);
-			return;
-		}
+	tempTask = tTaskHighestReady();
+	if(tempTask != currentTask){
+		nextTask = tempTask;
+		tTaskSwitch();
 	}
-	else{
-		if(currentTask == taskTable[0]){
-			if(taskTable[1]->delayTicks ==0){
-				nextTask =taskTable[1];
-			}
-			else if(currentTask->delayTicks!=0){
-				nextTask =idleTask;
-			}
-			else{
-				tTaskExitCritical(status);
-				return;
-			}
-		}
-		else if(currentTask == taskTable[1]){
-			if(taskTable[1]->delayTicks==0){
-				nextTask = taskTable[0];
-			}
-			else if(currentTask->delayTicks!=0){
-				nextTask =idleTask;
-			}
-			else{
-				tTaskExitCritical(status);
-				return;
-			}
-		}
-	}
-	tTaskSwitch();
+	
 	tTaskExitCritical(status);
 }	
 
@@ -122,11 +101,14 @@ void tTaskSystemTickHandler()
 	int i;
 	
 	uint32_t status = tTaskEnterCritical();
-	for(i=0;i<2;i++)
+	for(i=0;i<TINYOS_PRO_COUNT;i++)
 	{
 			if(taskTable[i]->delayTicks>0){
 				taskTable[i]->delayTicks--;
 			}//任务需要延时，时间频率递减
+			else{
+				tBitmapSet(&taskPrioBitmap,i);
+			}
 	}
 	
 	tTaskExitCritical(status);
@@ -138,6 +120,7 @@ void tTaskDelay(uint32_t delay)
 {
 	uint32_t status = tTaskEnterCritical();
 	currentTask->delayTicks=delay;
+	tBitmapClear(&taskPrioBitmap, currentTask->prio);
 	tTaskExitCritical(status);
 	tTaskSched();
 }
@@ -167,23 +150,7 @@ int firstSet;
 int task1Flag;
 void task1Entry (void * param)
 {
-	//unsigned long value = *(unsigned long *)param;
-	//value++;  //测试参数，第一个参数存放到之中
-	tBitmap bitmap;
-	int i;
-	tBitmapInit(&bitmap);
 	
-	for(i = tBitmapPosCount()-1;i>=0;i--){
-		tBitmapSet(&bitmap,i);
-		
-		firstSet = tBitmapGetFirstSet(&bitmap);
-	}
-	
-	for(i=0;i<tBitmapPosCount();i++)
-	{
-		tBitmapClear(&bitmap,i);
-		firstSet = tBitmapGetFirstSet(&bitmap);
-	}
 	tSetSysTickPeriod(10);//
 	for (;;)
 	{
@@ -231,13 +198,13 @@ void idleTaskEntry(void * param)
 int main()
 {
 	tTaskSchedInit();
-	tTaskInit(&tTask1, task1Entry, (void *)0x11111111, &task1Env[1024]);
-	tTaskInit(&tTask2, task2Entry, (void *)0x22222222, &task2Env[1024]);
+	tTaskInit(&tTask1, task1Entry, (void *)0x11111111,0, &task1Env[1024]);
+	tTaskInit(&tTask2, task2Entry, (void *)0x22222222,1, &task2Env[1024]);
 	
 	taskTable[0] = &tTask1;
 	taskTable[1] = &tTask2;
 
-	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, &idleTaskEnv[1024]);
+	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT-1,&idleTaskEnv[1024]);
 	nextTask = taskTable[0];
 	idleTask = &tTaskIdle;
 	
