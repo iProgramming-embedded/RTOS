@@ -145,13 +145,24 @@ void delay(int count)
 {
 	while(--count>0);
 }
-
-int firstSet;
 int task1Flag;
+tList list;
+tNode node[8];
+
 void task1Entry (void * param)
 {
-	
+	int i = 0;
 	tSetSysTickPeriod(10);//
+	
+	tListInit(&list);
+	for(i = 0;i < 8;i++){
+		tNodeInit(&node[i]);
+		tListAddFirst(&list,&node[i]);
+	}
+	for(i = 0;i < 8; i++)
+	{
+		tListRemoveFirst(&list);
+	}
 	for (;;)
 	{
 	
