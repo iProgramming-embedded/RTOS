@@ -1,6 +1,6 @@
 Dependencies for Project 'tinyos', Target 'Target 1': (DO NOT MODIFY !)
-F (.\Source\main.c)(0x5B12BA98)(-c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections-I C:\Users\Administrator\Desktop\tinyOS\RTE-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include-D__UVISION_VERSION="514" -D_RTE_ -DARMCM3-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
-I (Source\tinyOS.h)(0x5B100D82)
+F (.\Source\main.c)(0x5B140389)(-c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections-I C:\Users\Administrator\Desktop\tinyOS\RTE-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include-D__UVISION_VERSION="514" -D_RTE_ -DARMCM3-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (Source\tinyOS.h)(0x5B140389)
 I (D:\keil5.10\ARM\ARMCC\include\stdint.h)(0x5475F300)
 I (Source\tLib.h)(0x5B12B71B)
 I (Source\tConfig.h)(0x5B100DDC)
@@ -10,7 +10,7 @@ I (D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA
 I (D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
 I (D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include\system_ARMCM3.h)(0x50B2CC4C)
 F (.\Source\switch.c)(0x5B097733)(-c --cpu Cortex-M3 --li -g -O0 --apcs=interwork --split_sections-I C:\Users\Administrator\Desktop\tinyOS\RTE-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\keil5.10\ARM\PACK\ARM\CMSIS\4.2.0\Device\ARM\ARMCM3\Include-D__UVISION_VERSION="514" -D_RTE_ -DARMCM3-o .\objects\switch.o --omf_browse .\objects\switch.crf --depend .\objects\switch.d)
-I (Source\tinyOS.h)(0x5B100D82)
+I (Source\tinyOS.h)(0x5B140389)
 I (D:\keil5.10\ARM\ARMCC\include\stdint.h)(0x5475F300)
 I (Source\tLib.h)(0x5B12B71B)
 I (Source\tConfig.h)(0x5B100DDC)

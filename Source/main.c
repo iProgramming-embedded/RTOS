@@ -10,6 +10,8 @@ tBitmap taskPrioBitmap;
 tTask * taskTable[TINYOS_PRO_COUNT];
 //调度锁计数器
 uint8_t schedLockCount;
+
+tList tTaskDelayedList;
 //异常触发函数
 void triggerPendSVC(void)
 {
@@ -38,6 +40,9 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio
 	task->stack = stack;
 	task->delayTicks = 0;
 	task->prio = prio;
+	task->state = TINYOS_TASK_STATE_RDY;
+	
+	tNodeInit(&(task->delayNode));
 	
 	taskTable[prio] = task;
 	tBitmapSet(&taskPrioBitmap,prio);
@@ -78,6 +83,19 @@ void tTaskSchedEnable()
 	
 	tTaskExitCritical(status);
 }
+
+void tTaskSchedRdy (tTask * task)
+{
+	taskTable[task->prio] = task;
+	tBitmapSet(&taskPrioBitmap, task->prio);
+}
+
+void tTaskSchedUnRdy (tTask * task)
+{
+	taskTable[task->prio] = (tTask *)0;
+	tBitmapClear(&taskPrioBitmap, task->prio);
+}
+
 void tTaskSched()
 {
 	tTask * tempTask;
@@ -96,21 +114,40 @@ void tTaskSched()
 	tTaskExitCritical(status);
 }	
 
+void tTaskDelayedInit(void)
+{
+	tListInit(&tTaskDelayedList);
+}
+
+void tTimeTaskWait (tTask * task, uint32_t ticks)
+{
+	task->delayTicks = ticks;
+	tListAddLast(&tTaskDelayedList, &(task->delayNode));
+	task->state |= TINYOS_TASK_STATE_DELAYED;
+}
+
+void tTimeTaskWakeUp (tTask * task)
+{
+	tListRemove(&tTaskDelayedList, &(task->delayNode));
+	task->state &= ~TINYOS_TASK_STATE_DELAYED;
+}
 void tTaskSystemTickHandler()
 {
-	int i;
+	tNode * node;
 	
 	uint32_t status = tTaskEnterCritical();
-	for(i=0;i<TINYOS_PRO_COUNT;i++)
-	{
-			if(taskTable[i]->delayTicks>0){
-				taskTable[i]->delayTicks--;
-			}//任务需要延时，时间频率递减
-			else{
-				tBitmapSet(&taskPrioBitmap,i);
-			}
-	}
 	
+	for (node = tTaskDelayedList.headNode.nextNode; node != &(tTaskDelayedList.headNode); node = node->nextNode)
+	{
+		tTask * task = tNodeParent(node, tTask, delayNode);
+		if (--task->delayTicks == 0)
+		{
+			tTimeTaskWakeUp(task);
+			
+			tTaskSchedRdy(task);
+		}
+	}
+		
 	tTaskExitCritical(status);
 	
 	tTaskSched();
@@ -119,11 +156,16 @@ void tTaskSystemTickHandler()
 void tTaskDelay(uint32_t delay)
 {
 	uint32_t status = tTaskEnterCritical();
-	currentTask->delayTicks=delay;
-	tBitmapClear(&taskPrioBitmap, currentTask->prio);
+	
+	tTimeTaskWait(currentTask, delay);
+
+	tTaskSchedUnRdy(currentTask);
+	
 	tTaskExitCritical(status);
+	
 	tTaskSched();
 }
+
 void tSetSysTickPeriod(uint32_t ms)
 {
 	SysTick->LOAD = ms * SystemCoreClock / 1000-1;
@@ -146,23 +188,10 @@ void delay(int count)
 	while(--count>0);
 }
 int task1Flag;
-tList list;
-tNode node[8];
-
 void task1Entry (void * param)
 {
-	int i = 0;
 	tSetSysTickPeriod(10);//
 	
-	tListInit(&list);
-	for(i = 0;i < 8;i++){
-		tNodeInit(&node[i]);
-		tListAddFirst(&list,&node[i]);
-	}
-	for(i = 0;i < 8; i++)
-	{
-		tListRemoveFirst(&list);
-	}
 	for (;;)
 	{
 	
@@ -209,6 +238,8 @@ void idleTaskEntry(void * param)
 int main()
 {
 	tTaskSchedInit();
+	
+	tTaskDelayedInit();
 	tTaskInit(&tTask1, task1Entry, (void *)0x11111111,0, &task1Env[1024]);
 	tTaskInit(&tTask2, task2Entry, (void *)0x22222222,1, &task2Env[1024]);
 	
