@@ -7,7 +7,7 @@ tTask * idleTask;
 
 //优先级位图
 tBitmap taskPrioBitmap;
-tTask * taskTable[TINYOS_PRO_COUNT];
+tList taskTable[TINYOS_PRO_COUNT];
 //调度锁计数器
 uint8_t schedLockCount;
 
@@ -37,27 +37,37 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio
 	*(--stack) = (unsigned long)0x6;
 	*(--stack) = (unsigned long)0x5;
 	*(--stack) = (unsigned long)0x4;
+	
+	task->slice = TINYOS_SLICE_MAX;
 	task->stack = stack;
 	task->delayTicks = 0;
 	task->prio = prio;
 	task->state = TINYOS_TASK_STATE_RDY;
 	
+	tNodeInit(&(task->linkNode));
 	tNodeInit(&(task->delayNode));
+	tListAddFirst(&taskTable[prio],&(task->linkNode));
 	
-	taskTable[prio] = task;
+
 	tBitmapSet(&taskPrioBitmap,prio);
 }
 
 tTask * tTaskHighestReady(void)
 {
 	uint32_t highestPrio = tBitmapGetFirstSet(&taskPrioBitmap);
-	return taskTable[highestPrio];
+	tNode * node = tListFirst(&taskTable[highestPrio]);
+	return tNodeParent(node,tTask,linkNode);
 }
 //锁定计数器初始化
 void tTaskSchedInit(void)
 {
+	int i;
 	schedLockCount = 0;
 	tBitmapInit(&taskPrioBitmap);
+	for(i=0;i<TINYOS_PRO_COUNT;i++)
+	{
+		tListInit(&taskTable[i]);
+	}
 }
 
 //上锁，禁止调度函数
@@ -86,14 +96,17 @@ void tTaskSchedEnable()
 
 void tTaskSchedRdy (tTask * task)
 {
-	taskTable[task->prio] = task;
+  tListAddFirst(&(taskTable[task->prio]), &(task->linkNode));
 	tBitmapSet(&taskPrioBitmap, task->prio);
 }
 
 void tTaskSchedUnRdy (tTask * task)
 {
-	taskTable[task->prio] = (tTask *)0;
-	tBitmapClear(&taskPrioBitmap, task->prio);
+	tListRemove(&taskTable[task->prio], &(task->linkNode));
+	if (tListCount(&taskTable[task->prio]) == 0)
+	{
+		tBitmapClear(&taskPrioBitmap, task->prio);
+	}
 }
 
 void tTaskSched()
@@ -147,6 +160,17 @@ void tTaskSystemTickHandler()
 			tTaskSchedRdy(task);
 		}
 	}
+	
+	if (--currentTask->slice == 0)
+	{
+		if (tListCount(&taskTable[currentTask->prio]) > 0)
+		{
+			tListRemoveFirst(&taskTable[currentTask->prio]);
+			tListAddLast(&taskTable[currentTask->prio], &(currentTask->linkNode));
+			
+			currentTask->slice = TINYOS_SLICE_MAX;
+		}
+	}
 		
 	tTaskExitCritical(status);
 	
@@ -183,10 +207,7 @@ void SysTick_Handler()
 }
 
 
-void delay(int count)
-{
-	while(--count>0);
-}
+
 int task1Flag;
 void task1Entry (void * param)
 {
@@ -202,6 +223,11 @@ void task1Entry (void * param)
 		
 	}
 }
+void delay ()
+{
+	int i = 0;
+	for (i = 0; i < 0xFF; i++) {}
+}
 int task2Flag;
 void task2Entry (void * param)
 {
@@ -210,18 +236,32 @@ void task2Entry (void * param)
 	{
 		
 		task2Flag = 0;
-		tTaskDelay(1);
+		delay();
 		task2Flag = 1;
-		tTaskDelay(1);	
+		delay();	
 	}
 }
 
+int task3Flag;
+void task3Entry (void * param)
+{
+	
+	for (;;)
+	{
+		
+		task3Flag = 0;
+		delay();
+		task3Flag = 1;
+		delay();	
+	}
+}
 tTask tTask1;
 tTask tTask2;
+tTask tTask3;
 
 tTaskStack task1Env[1024];
 tTaskStack task2Env[1024];
-
+tTaskStack task3Env[1024];
 //添加空闲任务
 tTask tTaskIdle;
 tTaskStack idleTaskEnv[1024];
@@ -242,13 +282,14 @@ int main()
 	tTaskDelayedInit();
 	tTaskInit(&tTask1, task1Entry, (void *)0x11111111,0, &task1Env[1024]);
 	tTaskInit(&tTask2, task2Entry, (void *)0x22222222,1, &task2Env[1024]);
+	tTaskInit(&tTask3, task3Entry, (void *)0x22222222,1, &task3Env[1024]);
 	
-	taskTable[0] = &tTask1;
-	taskTable[1] = &tTask2;
+
 
 	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT-1,&idleTaskEnv[1024]);
-	nextTask = taskTable[0];
 	idleTask = &tTaskIdle;
+	
+	nextTask = tTaskHighestReady();
 	
 	tTaskRunFirst();
 	
