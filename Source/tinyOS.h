@@ -7,6 +7,7 @@
 
 #define TINYOS_TASK_STATE_RDY 0
 #define TINYOS_TASK_STATE_DELAYED (1 << 1)
+#define	TINYOS_TASK_STATE_SUSPEND		(1 << 2)
 
 typedef uint32_t tTaskStack;
 
@@ -18,6 +19,7 @@ typedef struct _tTask {
 	uint32_t prio;   //添加优先级字段
 	uint32_t state;
 	uint32_t slice;
+	uint32_t suspendCount;  //挂起计数器
 }tTask;
 
 extern tTask * currentTask;
@@ -32,11 +34,15 @@ void tTaskSwitch(void);
 void tTaskSchedInit(void);
 void tTaskSchedDisable(void);
 void tTaskSchedEnable(void);
+void tTaskSchedRdy (tTask * task);
+void tTaskSchedUnRdy (tTask * task);
 void tTaskSched(void);
+void tTaskSuspend (tTask * task);
 void tTimeTaskWait (tTask * task, uint32_t ticks);
 void tTimeTaskWakeUp (tTask * task);
-void tTaskSystemTickHandler ();
+void tTaskSystemTickHandler (void);
 void tTaskDelay (uint32_t delay);
 void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack);
 void tSetSysTickPeriod (uint32_t ms);
+void tInitApp (void);
 #endif
