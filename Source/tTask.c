@@ -26,6 +26,10 @@ void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio
 	task->delayTicks = 0;
 	task->prio = prio;
 	task->state = TINYOS_TASK_STATE_RDY;
+	task->suspendCount = 0;
+	task->clean = (void (*)(void *))0;
+	task->cleanParam = (void *)0;
+	task->requestDeleteFlag = 0;
 	
 	tNodeInit(&(task->delayNode));
 	tNodeInit(&(task->linkNode));
@@ -66,6 +70,76 @@ void tTaskWakeUp (tTask * task)
 			tTaskSched();
 		}
 	}
+	
+	tTaskExitCritical(status);
+}
+
+void tTaskSetCleanCallFunc (tTask * task, void (*clean)(void * param), void * param)
+{
+	task->clean = clean;
+	task->cleanParam = param;
+}
+
+void tTaskForceDelete (tTask * task)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	if (task->state & TINYOS_TASK_STATE_DELAYED)
+	{
+		tTimeTaskRemove(task);
+	}
+	else if (!(task->state & TINYOS_TASK_STATE_SUSPEND))
+	{
+		tTaskSchedRemove(task);
+	}
+	
+	if (task->clean)
+	{
+		task->clean(task->cleanParam);
+	}
+	
+	if (currentTask == task)
+	{
+		tTaskSched();
+	}
+	
+	tTaskExitCritical(status);
+}
+
+void tTaskRequestDelete (tTask * task)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	task->requestDeleteFlag = 1;
+	
+	tTaskExitCritical(status);
+}
+
+uint8_t tTaskIsRequestedDeleted (void)
+{
+	uint8_t delete;
+	
+	uint32_t status = tTaskEnterCritical();
+	
+	delete = currentTask->requestDeleteFlag;
+	
+	tTaskExitCritical(status);
+	
+	return delete;
+}
+
+void tTaskDeleteSelf (void)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	tTaskSchedRemove(currentTask);
+	
+	if (currentTask->clean)
+	{
+		currentTask->clean(currentTask->cleanParam);
+	}
+	
+	tTaskSched();
 	
 	tTaskExitCritical(status);
 }

@@ -76,6 +76,15 @@ void tTaskSchedUnRdy (tTask * task)
 	}
 }
 
+void tTaskSchedRemove (tTask * task)
+{
+	tListRemove(&taskTable[task->prio], &(task->linkNode));
+	if (tListCount(&taskTable[task->prio]) == 0)
+	{
+		tBitmapClear(&taskPrioBitmap, task->prio);
+	}
+}
+
 void tTaskSched()
 {
 	tTask * tempTask;
@@ -110,6 +119,11 @@ void tTimeTaskWakeUp (tTask * task)
 {
 	tListRemove(&tTaskDelayedList, &(task->delayNode));
 	task->state &= ~TINYOS_TASK_STATE_DELAYED;
+}
+
+void tTimeTaskRemove (tTask * task)
+{
+	tListRemove(&tTaskDelayedList, &(task->delayNode));
 }
 void tTaskSystemTickHandler()
 {
