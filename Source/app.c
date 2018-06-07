@@ -11,20 +11,18 @@ tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
 int task1Flag;
-
-void task1DestroyFunc (void * param)
-{
-	task1Flag = 0;
-}
-
 void task1Entry (void * param)
 {	
+	tTaskInfo taskInfo;
+	
 	tSetSysTickPeriod(10);
-	
-	tTaskSetCleanCallFunc(currentTask, task1DestroyFunc, (void *)0);
-	
+		
 	for (;;)
 	{
+		tTaskGetInfo(currentTask, &taskInfo);
+		
+		tTaskGetInfo(&tTask4, &taskInfo);
+		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
@@ -35,20 +33,12 @@ void task1Entry (void * param)
 int task2Flag;
 void task2Entry (void * param)
 {
-	int task1Deleted = 0;
-	
 	for (;;)
 	{		
 		task2Flag = 0;
 		tTaskDelay(1);
 		task2Flag = 1;
 		tTaskDelay(1);
-		
-		if (!task1Deleted)
-		{
-			tTaskForceDelete(&tTask1);
-			task1Deleted = 1;
-		}
 	}
 }
 
@@ -57,12 +47,6 @@ void task3Entry (void * param)
 {
 	for (;;)
 	{		
-		if (tTaskIsRequestedDeleted())
-		{
-			task3Flag = 0;
-			tTaskDeleteSelf();
-		}
-		
 		task3Flag = 0;
 		tTaskDelay(1);
 		task3Flag = 1;
@@ -72,20 +56,12 @@ void task3Entry (void * param)
 int task4Flag;
 void task4Entry (void * param)
 {
-	int task3Deleted = 0;
-	
 	for (;;)
 	{		
 		task4Flag = 0;
 		tTaskDelay(1);
 		task4Flag = 1;
 		tTaskDelay(1);
-		
-		if (!task3Deleted)
-		{
-			tTaskRequestDelete(&tTask3);
-			task3Deleted = 1;
-		}
 	}
 }
 

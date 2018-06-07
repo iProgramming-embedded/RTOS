@@ -1,7 +1,7 @@
 #!/bin/bash
 
  git add .
- git commit -m "15th"
+ git commit -m "16th"
  git remote rm origin
  git remote add origin git@github.com:LeonLinuxNerd/RTOS.git
  git pull origin master

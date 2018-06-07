@@ -143,3 +143,15 @@ void tTaskDeleteSelf (void)
 	
 	tTaskExitCritical(status);
 }
+void tTaskGetInfo (tTask * task, tTaskInfo * info)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	info->delayTicks = task->delayTicks;
+	info->prio = task->prio;
+	info->state = task->state;
+	info->slice = task->slice;
+	info->suspendCount = task->suspendCount;
+	
+	tTaskExitCritical(status);
+}
