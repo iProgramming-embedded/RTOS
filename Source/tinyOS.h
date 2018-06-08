@@ -7,6 +7,12 @@
 
 #include "tConfig.h"
 
+#include "tEvent.h"
+
+typedef enum _tError{
+	tErrorNoError = 0,
+}tError;
+
 #define	TINYOS_TASK_STATE_RDY					0
 #define	TINYOS_TASK_STATE_DESTORYED				(1 << 1)
 #define	TINYOS_TASK_STATE_DELAYED				(1 << 2)
@@ -27,6 +33,10 @@ typedef struct _tTask {
 	void (*clean) (void * param);
 	void * cleanParam;
 	uint8_t requestDeleteFlag;
+	
+	tEvent * waitEvent;
+	void * eventMsg;
+	uint32_t waitEventResult;
 }tTask;
 
 extern tTask * currentTask;

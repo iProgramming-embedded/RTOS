@@ -3,3 +3,4 @@
 .\objects\ttime.o: D:\keil5.10\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\ttime.o: Source\tLib.h
 .\objects\ttime.o: Source\tConfig.h
+.\objects\ttime.o: Source\tEvent.h

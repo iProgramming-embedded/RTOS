@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\app.c</FilePath>
             </File>
+            <File>
+              <FileName>tEvent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\tEvent.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
