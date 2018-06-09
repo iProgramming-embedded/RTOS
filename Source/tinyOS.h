@@ -7,37 +7,14 @@
 
 #include "tConfig.h"
 
+#include "tTask.h"
+
 #include "tEvent.h"
 
-typedef enum _tError{
+typedef enum _tError {
 	tErrorNoError = 0,
+	tErrorTimeout = 1,
 }tError;
-
-#define	TINYOS_TASK_STATE_RDY					0
-#define	TINYOS_TASK_STATE_DESTORYED				(1 << 1)
-#define	TINYOS_TASK_STATE_DELAYED				(1 << 2)
-#define	TINYOS_TASK_STATE_SUSPEND				(1 << 3)
-
-typedef uint32_t tTaskStack;
-
-typedef struct _tTask {
-	tTaskStack * stack;
-	tNode linkNode;
-	uint32_t delayTicks;
-	tNode delayNode;
-	uint32_t prio;
-	uint32_t state;
-	uint32_t slice;
-	uint32_t suspendCount;
-	
-	void (*clean) (void * param);
-	void * cleanParam;
-	uint8_t requestDeleteFlag;
-	
-	tEvent * waitEvent;
-	void * eventMsg;
-	uint32_t waitEventResult;
-}tTask;
 
 extern tTask * currentTask;
 extern tTask * nextTask;
@@ -60,24 +37,6 @@ void tTimeTaskWakeUp (tTask * task);
 void tTimeTaskRemove (tTask * task);
 void tTaskSystemTickHandler (void);
 void tTaskDelay (uint32_t delay);
-
-typedef struct _tTaskInfo {
-	uint32_t delayTicks;
-	uint32_t prio;
-	uint32_t state;
-	uint32_t slice;
-	uint32_t suspendCount;
-}tTaskInfo;
-
-void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack);
-void tTaskSuspend (tTask * task);
-void tTaskWakeUp (tTask * task);
-void tTaskSetCleanCallFunc (tTask * task, void (*clean)(void * param), void * param);
-void tTaskForceDelete (tTask * task);
-void tTaskRequestDelete (tTask * task);
-uint8_t tTaskIsRequestedDeleted (void);
-void tTaskDeleteSelf (void);
-void tTaskGetInfo (tTask * task, tTaskInfo * info);
 
 void tSetSysTickPeriod (uint32_t ms);
 void tInitApp (void);

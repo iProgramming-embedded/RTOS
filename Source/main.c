@@ -125,7 +125,7 @@ void tTimeTaskRemove (tTask * task)
 {
 	tListRemove(&tTaskDelayedList, &(task->delayNode));
 }
-void tTaskSystemTickHandler()
+void tTaskSystemTickHandler ()
 {
 	tNode * node;
 	
@@ -136,6 +136,11 @@ void tTaskSystemTickHandler()
 		tTask * task = tNodeParent(node, tTask, delayNode);
 		if (--task->delayTicks == 0)
 		{
+			if (task->waitEvent)
+			{
+				tEventRemoveTask(task, (void *)0, tErrorTimeout);
+			}
+			
 			tTimeTaskWakeUp(task);
 			
 			tTaskSchedRdy(task);
@@ -157,6 +162,7 @@ void tTaskSystemTickHandler()
 	
 	tTaskSched();
 }
+
 
 
 
