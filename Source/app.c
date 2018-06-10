@@ -10,7 +10,6 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
-tEvent eventWaitTimeout;
 tEvent eventWaitNormal;
 
 int task1Flag;
@@ -18,12 +17,17 @@ void task1Entry (void * param)
 {		
 	tSetSysTickPeriod(10);
 	
-	tEventInit(&eventWaitTimeout, tEventTypeUnknow);
+	tEventInit(&eventWaitNormal, tEventTypeUnknow);
 		
 	for (;;)
 	{
-		tEventWait(&eventWaitTimeout, currentTask, (void *)0, 0, 5);
-		tTaskSched();
+		uint32_t count = tEventWaitCount(&eventWaitNormal);
+		uint32_t wakeUpCount = tEventRemoveAll(&eventWaitNormal, (void *)0, 0);
+		if (wakeUpCount > 0)
+		{
+			tTaskSched();
+			count = tEventWaitCount(&eventWaitNormal);
+		}
 		
 		task1Flag = 0;
 		tTaskDelay(1);
@@ -50,7 +54,6 @@ void task2Entry (void * param)
 int task3Flag;
 void task3Entry (void * param)
 {
-	tEventInit(&eventWaitNormal, tEventTypeUnknow);
 	for (;;)
 	{		
 		tEventWait(&eventWaitNormal, currentTask, (void *)0, 0, 0);
@@ -67,7 +70,7 @@ void task4Entry (void * param)
 {	
 	for (;;)
 	{		
-		tTask * rdyTask = tEventWakeUp(&eventWaitNormal, (void *)0, 0);
+		tEventWait(&eventWaitNormal, currentTask, (void *)0, 0, 0);
 		tTaskSched();
 		
 		task4Flag = 0;
@@ -81,7 +84,6 @@ void tInitApp (void)
 {
 	tTaskInit(&tTask1, task1Entry, (void *)0x11111111, 0, &task1Env[1024]);
 	tTaskInit(&tTask2, task2Entry, (void *)0x22222222, 1, &task2Env[1024]);
-	tTaskInit(&tTask3, task3Entry, (void *)0x22222222, 0, &task3Env[1024]);	
+	tTaskInit(&tTask3, task3Entry, (void *)0x22222222, 1, &task3Env[1024]);	
 	tTaskInit(&tTask4, task4Entry, (void *)0x44444444, 1, &task4Env[1024]);	
 }
-
