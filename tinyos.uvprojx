@@ -453,6 +453,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\tEvent.c</FilePath>
             </File>
+            <File>
+              <FileName>tSem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\tSem.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

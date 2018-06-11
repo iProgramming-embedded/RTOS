@@ -11,6 +11,8 @@
 
 #include "tEvent.h"
 
+#include "tSem.h"
+
 typedef enum _tError {
 	tErrorNoError = 0,
 	tErrorTimeout = 1,

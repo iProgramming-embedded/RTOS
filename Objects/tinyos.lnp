@@ -8,6 +8,7 @@
 ".\objects\tcpu.o"
 ".\objects\app.o"
 ".\objects\tevent.o"
+".\objects\tsem.o"
 ".\objects\startup_armcm3.o"
 ".\objects\system_armcm3.o"
 --strict --scatter ".\Objects\tinyos.sct"
