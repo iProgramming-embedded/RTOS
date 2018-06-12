@@ -10,16 +10,19 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
-tSem sem;
+tSem sem1;
+tSem sem2;
 
 int task1Flag;
 void task1Entry (void * param)
 {		
 	tSetSysTickPeriod(10);
 			
-	tSemInit(&sem, 1, 10);
+	tSemInit(&sem1, 0, 10);
 	for (;;)
 	{	
+		tSemWait(&sem1, 0);
+		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
@@ -30,20 +33,29 @@ void task1Entry (void * param)
 int task2Flag;
 void task2Entry (void * param)
 {	
+	int error = 0;
+	
 	for (;;)
 	{			
 		task2Flag = 0;
 		tTaskDelay(1);
 		task2Flag = 1;
 		tTaskDelay(1);
+		
+		tSemNotify(&sem1);
+		
+		error = tSemNoWaitGet(&sem1);
 	}
 }
 
 int task3Flag;
 void task3Entry (void * param)
 {
+	tSemInit(&sem2, 0, 0);
 	for (;;)
 	{		
+		tSemWait(&sem2, 10);
+		
 		task3Flag = 0;
 		tTaskDelay(1);
 		task3Flag = 1;

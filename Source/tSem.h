@@ -11,5 +11,7 @@ typedef struct _tSem
 }tSem;
 
 void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount);
-
+uint32_t tSemWait (tSem * sem, uint32_t waitTicks);
+uint32_t tSemNoWaitGet (tSem * sem);
+void tSemNotify (tSem * sem);
 #endif

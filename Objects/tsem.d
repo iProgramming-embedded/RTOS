@@ -4,3 +4,5 @@
 .\objects\tsem.o: Source\tLib.h
 .\objects\tsem.o: D:\keil5.10\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\tsem.o: Source\tTask.h
+.\objects\tsem.o: Source\tinyOS.h
+.\objects\tsem.o: Source\tConfig.h

@@ -1,4 +1,5 @@
 #include "tSem.h"
+#include "tinyOS.h"
 
 void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount)
 {
@@ -13,4 +14,66 @@ void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount)
 	{
 		sem->count = (startCount > maxCount) ? maxCount : startCount;
 	}
+}
+
+uint32_t tSemWait (tSem * sem, uint32_t waitTicks)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	if (sem->count > 0)
+	{
+		--sem->count;
+		tTaskExitCritical(status);
+		return tErrorNoError;
+	}
+	else
+	{
+		tEventWait(&sem->event, currentTask, (void *)0, tEventTypeSem, waitTicks);
+		tTaskExitCritical(status);
+		
+		tTaskSched();
+		
+		return currentTask->waitEventResult;
+	}
+}
+
+uint32_t tSemNoWaitGet (tSem * sem)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	if (sem->count > 0)
+	{
+		--sem->count;
+		tTaskExitCritical(status);
+		return tErrorNoError;
+	}
+	else 
+	{
+		tTaskExitCritical(status);
+		return tErrorResourceUnavaliable;
+	}
+}
+
+
+void tSemNotify (tSem * sem)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	if (tEventWaitCount(&sem->event) > 0)
+	{
+		tTask * task = tEventWakeUp(&sem->event, (void *)0, tErrorNoError);
+		if (task->prio < currentTask->prio)
+		{
+			tTaskSched();
+		}
+	}
+	else
+	{
+		++sem->count;
+		if ((sem->maxCount != 0) && (sem->count > sem->maxCount))
+		{
+			sem->count = sem->maxCount;
+		}
+	}
+	tTaskExitCritical(status);
 }
