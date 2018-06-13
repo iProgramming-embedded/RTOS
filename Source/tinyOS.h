@@ -15,8 +15,9 @@
 
 typedef enum _tError {
 	tErrorNoError = 0,
-	tErrorTimeout = 1,
+	tErrorTimeout,
 	tErrorResourceUnavaliable,
+	tErrorDel,
 }tError;
 
 extern tTask * currentTask;

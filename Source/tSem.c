@@ -77,3 +77,29 @@ void tSemNotify (tSem * sem)
 	}
 	tTaskExitCritical(status);
 }
+
+void tSemGetInfo (tSem * sem, tSemInfo * info)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	info->count = sem->count;
+	info->maxCount = sem->maxCount;
+	info->taskCount = tEventWaitCount(&sem->event);
+	
+	tTaskExitCritical(status);
+}
+
+uint32_t tSemDestroy (tSem * sem)
+{
+	uint32_t status = tTaskEnterCritical();
+	uint32_t count = tEventRemoveAll(&sem->event, (void *)0, tErrorDel);
+	sem->count = 0;
+	tTaskExitCritical(status);
+	
+	if (count > 0)
+	{
+		tTaskSched();
+	}
+	
+	return count;
+}

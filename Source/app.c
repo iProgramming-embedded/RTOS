@@ -19,10 +19,10 @@ void task1Entry (void * param)
 	tSetSysTickPeriod(10);
 			
 	tSemInit(&sem1, 0, 10);
+	
+	tSemWait(&sem1, 0);
 	for (;;)
 	{	
-		tSemWait(&sem1, 0);
-		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
@@ -33,7 +33,8 @@ void task1Entry (void * param)
 int task2Flag;
 void task2Entry (void * param)
 {	
-	int error = 0;
+	tSemInfo semInfo;
+	int destroyed = 0;
 	
 	for (;;)
 	{			
@@ -42,9 +43,12 @@ void task2Entry (void * param)
 		task2Flag = 1;
 		tTaskDelay(1);
 		
-		tSemNotify(&sem1);
-		
-		error = tSemNoWaitGet(&sem1);
+		if (!destroyed)
+		{
+			tSemGetInfo(&sem1, &semInfo);
+			tSemDestroy(&sem1);
+			destroyed = 1;
+		}
 	}
 }
 
