@@ -13,6 +13,8 @@
 
 #include "tSem.h"
 
+#include "tMbox.h"
+
 typedef enum _tError {
 	tErrorNoError = 0,
 	tErrorTimeout,

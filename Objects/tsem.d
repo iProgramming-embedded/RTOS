@@ -6,3 +6,4 @@
 .\objects\tsem.o: Source\tTask.h
 .\objects\tsem.o: Source\tinyOS.h
 .\objects\tsem.o: Source\tConfig.h
+.\objects\tsem.o: Source\tMbox.h
