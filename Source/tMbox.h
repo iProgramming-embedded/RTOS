@@ -3,6 +3,9 @@
 
 #include "tEvent.h"
 
+#define	tMBOXSendNormal			0x00
+#define	tMBOXSendFront			0x01
+
 typedef struct _tMbox
 {
 	tEvent event;
@@ -14,5 +17,8 @@ typedef struct _tMbox
 }tMbox;
 
 void tMboxInit (tMbox * mbox, void **msgBufer, uint32_t maxCount);
+uint32_t tMboxWait (tMbox * mbox, void **msg, uint32_t waitTicks);
+uint32_t tMboxNoWaitGet (tMbox * mbox, void **msg);
+uint32_t tMboxNotify (tMbox * mbox, void * msg, uint32_t notifyOption);
 
 #endif

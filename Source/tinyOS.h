@@ -20,6 +20,7 @@ typedef enum _tError {
 	tErrorTimeout,
 	tErrorResourceUnavaliable,
 	tErrorDel,
+	tErrorResourceFull,
 }tError;
 
 extern tTask * currentTask;
