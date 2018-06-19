@@ -136,4 +136,16 @@ uint32_t tMboxDestroy (tMbox * mbox)
 	return count;
 }
 
+void tMboxGetInfo (tMbox * mbox, tMboxInfo * info)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	info->count = mbox->count;
+	info->maxCount = mbox->maxCount;
+	info->taskCount = tEventWaitCount(&mbox->event);
+	
+	tTaskExitCritical(status);
+}
+
+
 
