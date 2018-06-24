@@ -7,3 +7,4 @@
 .\objects\app.o: Source\tEvent.h
 .\objects\app.o: Source\tSem.h
 .\objects\app.o: Source\tMbox.h
+.\objects\app.o: Source\tMemBlock.h

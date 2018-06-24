@@ -10,27 +10,17 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
-tMbox mbox;
-void * mboxMsgBuffer[20];
-uint32_t msg[20];
+uint8_t mem1[20][100];
+tMemBlock memBlock1;
 
 int task1Flag;
 void task1Entry (void * param)
 {			
 	tSetSysTickPeriod(10);
 	
-	tMboxInit(&mbox, mboxMsgBuffer, 20);
+	tMemBlockInit(&memBlock1, (uint8_t *)mem1, 100, 20);
 	for (;;)
 	{	
-		tMboxInfo mboxInfo;
-		int i = 0;
-		for (i = 0; i < 20; i++)
-		{
-			msg[i] = i;
-			tMboxNotify(&mbox, &msg[i], tMBOXSendNormal);
-			tMboxGetInfo(&mbox, &mboxInfo);
-		}
-		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
