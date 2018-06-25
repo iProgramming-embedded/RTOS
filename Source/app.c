@@ -10,15 +10,32 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
+typedef uint8_t (*tBlock)[100];
 uint8_t mem1[20][100];
 tMemBlock memBlock1;
 
 int task1Flag;
 void task1Entry (void * param)
-{			
+{		
+	uint8_t i;
+	tBlock block[20];
+	
 	tSetSysTickPeriod(10);
 	
 	tMemBlockInit(&memBlock1, (uint8_t *)mem1, 100, 20);
+	for (i = 0; i < 20; i++)
+	{
+		tMemBlockWait(&memBlock1, (uint8_t **)&block[i], 0);
+	}
+	
+	tTaskDelay(2);
+	for (i = 0; i < 20; i++)
+	{
+		memset(block[i], i, 100);
+		tMemBlockNotify(&memBlock1, (uint8_t *)block[i]);
+		tTaskDelay(2);
+	}
+	
 	for (;;)
 	{	
 		task1Flag = 0;
@@ -33,10 +50,9 @@ void task2Entry (void * param)
 {			
 	for (;;)
 	{			
-		task2Flag = 0;
-		tTaskDelay(1);
-		task2Flag = 1;
-		tTaskDelay(1);
+		tBlock block;
+		tMemBlockWait(&memBlock1, (uint8_t **)&block, 0);
+		task2Flag = *(uint8_t *)block;
 	}
 }
 
