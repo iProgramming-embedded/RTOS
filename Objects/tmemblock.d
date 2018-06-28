@@ -8,3 +8,4 @@
 .\objects\tmemblock.o: Source\tSem.h
 .\objects\tmemblock.o: Source\tMbox.h
 .\objects\tmemblock.o: Source\tMemBlock.h
+.\objects\tmemblock.o: Source\tFlagGroup.h
