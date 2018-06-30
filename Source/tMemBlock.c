@@ -107,6 +107,29 @@ uint32_t tMemBlockDestroy (tMemBlock * memBlock)
 	}
 	return count;
 }
+void tFlagGroupGetInfo (tFlagGroup * flagGroup, tFlagGroupInfo * info)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	info->flags = flagGroup->flag;
+	info->taskCount = tEventWaitCount(&flagGroup->event);
+	
+	tTaskExitCritical(status);
+}
+
+uint32_t tFlagGroupDestroy (tFlagGroup * flagGroup)
+{
+	uint32_t status = tTaskEnterCritical();
+	uint32_t count = tEventRemoveAll(&flagGroup->event, (void *)0, tErrorDel);
+	tTaskExitCritical(status);
+	
+	if (count > 0)
+	{
+		tTaskSched();
+	}
+	
+	return count;
+}
 
 
 

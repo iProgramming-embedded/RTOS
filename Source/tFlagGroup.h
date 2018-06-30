@@ -9,6 +9,12 @@ typedef struct _tFlagGroup
 	uint32_t flag;
 }tFlagGroup;
 
+typedef struct _tFlagGroupInfo
+{
+	uint32_t flags;
+	uint32_t taskCount;
+}tFlagGroupInfo;
+
 #define	TFLAGGROUP_CLEAR		(0x0 << 0)
 #define	TFLAGGROUP_SET			(0x1 << 0)
 #define	TFLAGGROUP_ANY			(0x0 << 1)
@@ -26,4 +32,8 @@ void tFlagGroupInit (tFlagGroup * flagGroup, uint32_t flags);
 uint32_t tFlagGropuWait (tFlagGroup * flagGroup, uint32_t waitType, uint32_t requestFlag, uint32_t * resultFlag, uint32_t waitTicks);
 uint32_t tFlagGroupNoWaitGet (tFlagGroup * flagGroup, uint32_t waitType, uint32_t requestFlag, uint32_t * resultFlag);
 void tFlagGroupNotify (tFlagGroup * flagGroup, uint8_t isSet, uint32_t flag);
+
+void tFlagGroupGetInfo (tFlagGroup * flagGroup, tFlagGroupInfo * info);
+uint32_t tFlagGroupDestroy (tFlagGroup * flagGroup);
+
 #endif

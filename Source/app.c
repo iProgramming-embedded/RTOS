@@ -19,14 +19,14 @@ void task1Entry (void * param)
 	tSetSysTickPeriod(10);
 		
 	tFlagGroupInit(&flagGroup1, 0xFF);
+	tTaskDelay(1);
+	tFlagGroupDestroy(&flagGroup1);
 	for (;;)
 	{	
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
 		tTaskDelay(1);
-		
-		tFlagGroupNotify(&flagGroup1, 0, 0x6);
 	}
 }
 
@@ -34,12 +34,15 @@ int task2Flag;
 void task2Entry (void * param)
 {				
 	uint32_t resultFlags = 0;
+	tFlagGroupInfo info;
 	
+	tFlagGroupWait(&flagGroup1, TFLAGGROUP_SET_ALL | TFLAGGROUP_CONSUME, 0x1, &resultFlags, 0);
+	tFlagGroupGetInfo(&flagGroup1, &info);
+	
+	tFlagGroupWait(&flagGroup1, TFLAGGROUP_SET_ALL | TFLAGGROUP_CONSUME, 0x1, &resultFlags, 0);
+
 	for (;;)
-	{			
-		tFlagGropuWait(&flagGroup1, TFLAGGROUP_CLEAR_ALL | TFLAGGROUP_CONSUME, 0x4, &resultFlags, 10);
-		tFlagGroupNoWaitGet(&flagGroup1, TFLAGGROUP_CLEAR_ALL, 0x3, &resultFlags);
-		
+	{					
 		task2Flag = 0;
 		tTaskDelay(1);
 		task2Flag = 1;
