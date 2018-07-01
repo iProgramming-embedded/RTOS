@@ -12,15 +12,12 @@ tTaskStack task4Env[1024];
 
 int task1Flag;
 
-tFlagGroup flagGroup1;
-
+tMutex mutex;
 void task1Entry (void * param)
 {		
 	tSetSysTickPeriod(10);
 		
-	tFlagGroupInit(&flagGroup1, 0xFF);
-	tTaskDelay(1);
-	tFlagGroupDestroy(&flagGroup1);
+	tMutexInit(&mutex);
 	for (;;)
 	{	
 		task1Flag = 0;
@@ -33,14 +30,6 @@ void task1Entry (void * param)
 int task2Flag;
 void task2Entry (void * param)
 {				
-	uint32_t resultFlags = 0;
-	tFlagGroupInfo info;
-	
-	tFlagGroupWait(&flagGroup1, TFLAGGROUP_SET_ALL | TFLAGGROUP_CONSUME, 0x1, &resultFlags, 0);
-	tFlagGroupGetInfo(&flagGroup1, &info);
-	
-	tFlagGroupWait(&flagGroup1, TFLAGGROUP_SET_ALL | TFLAGGROUP_CONSUME, 0x1, &resultFlags, 0);
-
 	for (;;)
 	{					
 		task2Flag = 0;

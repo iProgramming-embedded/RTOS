@@ -9,3 +9,4 @@
 .\objects\tevent.o: Source\tMbox.h
 .\objects\tevent.o: Source\tMemBlock.h
 .\objects\tevent.o: Source\tFlagGroup.h
+.\objects\tevent.o: Source\tMutex.h

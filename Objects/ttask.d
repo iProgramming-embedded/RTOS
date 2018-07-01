@@ -9,3 +9,4 @@
 .\objects\ttask.o: Source\tMbox.h
 .\objects\ttask.o: Source\tMemBlock.h
 .\objects\ttask.o: Source\tFlagGroup.h
+.\objects\ttask.o: Source\tMutex.h
