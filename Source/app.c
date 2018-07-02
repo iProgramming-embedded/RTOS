@@ -20,10 +20,16 @@ void task1Entry (void * param)
 	tMutexInit(&mutex);
 	for (;;)
 	{	
+		tMutexWait(&mutex, 0);
+		tMutexWait(&mutex, 0);
+		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
 		tTaskDelay(1);
+	
+		tMutexNotify(&mutex);
+		tMutexNotify(&mutex);
 	}
 }
 
@@ -32,10 +38,16 @@ void task2Entry (void * param)
 {				
 	for (;;)
 	{					
+		tMutexWait(&mutex, 0);
+		tMutexWait(&mutex, 0);
+		
 		task2Flag = 0;
 		tTaskDelay(1);
 		task2Flag = 1;
 		tTaskDelay(1);
+		
+		tMutexNotify(&mutex);
+		tMutexNotify(&mutex);
 	}
 }
 
