@@ -15,39 +15,39 @@ int task1Flag;
 tMutex mutex;
 void task1Entry (void * param)
 {		
+	tMutexInfo info;
+	
 	tSetSysTickPeriod(10);
 		
 	tMutexInit(&mutex);
+	
+	tMutexWait(&mutex, 0);;
+	
+	tTaskDelay(2);
+	
+	tMutexGetInfo(&mutex, &info);
+	
+	tMutexDestroy(&mutex);
 	for (;;)
 	{	
-		tMutexWait(&mutex, 0);
-		tMutexWait(&mutex, 0);
-		
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
 		tTaskDelay(1);
-	
-		tMutexNotify(&mutex);
-		tMutexNotify(&mutex);
 	}
 }
 
 int task2Flag;
 void task2Entry (void * param)
 {				
+	tMutexWait(&mutex, 0);
+	
 	for (;;)
 	{					
-		tMutexWait(&mutex, 0);
-		tMutexWait(&mutex, 0);
-		
 		task2Flag = 0;
 		tTaskDelay(1);
 		task2Flag = 1;
 		tTaskDelay(1);
-		
-		tMutexNotify(&mutex);
-		tMutexNotify(&mutex);
 	}
 }
 
