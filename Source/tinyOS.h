@@ -21,6 +21,8 @@
 
 #include "tMutex.h"
 
+#include "tTimer.h"
+
 typedef enum _tError {
 	tErrorNoError = 0,
 	tErrorTimeout,

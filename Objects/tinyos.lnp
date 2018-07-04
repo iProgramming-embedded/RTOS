@@ -13,6 +13,7 @@
 ".\objects\tmemblock.o"
 ".\objects\tflaggroup.o"
 ".\objects\tmutex.o"
+".\objects\ttimer.o"
 ".\objects\startup_armcm3.o"
 ".\objects\system_armcm3.o"
 --strict --scatter ".\Objects\tinyos.sct"

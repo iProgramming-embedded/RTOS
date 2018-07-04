@@ -10,3 +10,4 @@
 .\objects\tflaggroup.o: Source\tMemBlock.h
 .\objects\tflaggroup.o: Source\tFlagGroup.h
 .\objects\tflaggroup.o: Source\tMutex.h
+.\objects\tflaggroup.o: Source\tTimer.h

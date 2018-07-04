@@ -10,24 +10,32 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
+tTimer timer1;
+tTimer timer2;
+tTimer timer3;
+
+uint32_t bit1 = 0;
+uint32_t bit2 = 0;
+uint32_t bit3 = 0;
+
+void timerFunc (void * arg)
+{
+	uint32_t * ptrBit = (uint32_t *)arg;
+	*ptrBit ^= 0x1;
+}
+
 int task1Flag;
 
-tMutex mutex;
 void task1Entry (void * param)
 {		
-	tMutexInfo info;
-	
 	tSetSysTickPeriod(10);
-		
-	tMutexInit(&mutex);
 	
-	tMutexWait(&mutex, 0);;
+	tTimerInit(&timer1, 100, 10, timerFunc, (void *)&bit1, TIMER_CONFIG_TYPE_HARD);
 	
-	tTaskDelay(2);
+	tTimerInit(&timer2, 200, 20, timerFunc, (void *)&bit2, TIMER_CONFIG_TYPE_HARD);
 	
-	tMutexGetInfo(&mutex, &info);
-	
-	tMutexDestroy(&mutex);
+	tTimerInit(&timer3, 300, 0, timerFunc, (void *)&bit3, TIMER_CONFIG_TYPE_SOFT);
+
 	for (;;)
 	{	
 		task1Flag = 0;
@@ -39,9 +47,7 @@ void task1Entry (void * param)
 
 int task2Flag;
 void task2Entry (void * param)
-{				
-	tMutexWait(&mutex, 0);
-	
+{					
 	for (;;)
 	{					
 		task2Flag = 0;
