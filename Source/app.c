@@ -28,20 +28,29 @@ int task1Flag;
 
 void task1Entry (void * param)
 {		
+	uint32_t stopped = 0;
+	
 	tSetSysTickPeriod(10);
 	
 	tTimerInit(&timer1, 100, 10, timerFunc, (void *)&bit1, TIMER_CONFIG_TYPE_HARD);
-	
+	tTimerStart(&timer1);
 	tTimerInit(&timer2, 200, 20, timerFunc, (void *)&bit2, TIMER_CONFIG_TYPE_HARD);
-	
+	tTimerStart(&timer2);
 	tTimerInit(&timer3, 300, 0, timerFunc, (void *)&bit3, TIMER_CONFIG_TYPE_SOFT);
-
+	tTimerStart(&timer3);
 	for (;;)
 	{	
 		task1Flag = 0;
 		tTaskDelay(1);
 		task1Flag = 1;
 		tTaskDelay(1);
+		
+		if (stopped == 0)
+		{
+			tTaskDelay(200);
+			tTimerStop(&timer1);
+			stopped = 1;
+		}
 	}
 }
 
