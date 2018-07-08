@@ -81,6 +81,25 @@ void tTimerStop (tTimer * timer)
 	}
 }
 
+void tTimerDestroy (tTimer * timer)
+{
+	tTimerStop(timer);
+	timer->state = tTimerDestroyed;
+}
+
+void tTimerGetInfo (tTimer * timer, tTimerInfo * info)
+{
+	uint32_t status = tTaskEnterCritical();
+	
+	info->startDelayTicks = timer->startDelayTicks;
+	info->durationTicks = timer->durationTicks;
+	info->timerFunc = timer->timerFunc;
+	info->arg = timer->arg;
+	info->config = timer->config;
+	info->state = timer->state;
+	
+	tTaskExitCritical(status);
+}
 static void tTimerCallFuncList (tList * timerList)
 {
 	tNode * node;

@@ -28,7 +28,8 @@ int task1Flag;
 
 void task1Entry (void * param)
 {		
-	uint32_t stopped = 0;
+	uint32_t destroyed = 0;
+	tTimerInfo timerInfo;
 	
 	tSetSysTickPeriod(10);
 	
@@ -45,12 +46,14 @@ void task1Entry (void * param)
 		task1Flag = 1;
 		tTaskDelay(1);
 		
-		if (stopped == 0)
+		if (destroyed == 0)
 		{
 			tTaskDelay(200);
-			tTimerStop(&timer1);
-			stopped = 1;
+			tTimerDestroy(&timer1);
+			destroyed = 1;
 		}
+		
+		tTimerGetInfo(&timer2, &timerInfo);
 	}
 }
 
