@@ -187,7 +187,7 @@ int main ()
 	
 	tInitApp();
 	
-	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT - 1, &idleTaskEnv[TINYOS_IDLETASK_STACK_SIZE]);
+	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT - 1, idleTaskEnv, TINYOS_IDLETASK_STACK_SIZE);
 	idleTask = &tTaskIdle;
 
 	nextTask = tTaskHighestReady();

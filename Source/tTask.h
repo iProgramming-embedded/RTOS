@@ -17,6 +17,8 @@ typedef uint32_t tTaskStack;
 typedef struct _tTask {
 	tTaskStack * stack;
 	tNode linkNode;
+	uint32_t * stackBase;
+	uint32_t stackSize;
 	uint32_t delayTicks;
 	tNode delayNode;
 	uint32_t prio;
@@ -42,9 +44,12 @@ typedef struct _tTaskInfo {
 	uint32_t state;
 	uint32_t slice;
 	uint32_t suspendCount;
+	
+	uint32_t stackSize;
+	uint32_t stackFree;
 }tTaskInfo;
 
-void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack);
+void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack, uint32_t size);
 void tTaskSuspend (tTask * task);
 void tTaskWakeUp (tTask * task);
 void tTaskSetCleanCallFunc (tTask * task, void (*clean)(void * param), void * param);
@@ -53,5 +58,6 @@ void tTaskRequestDelete (tTask * task);
 uint8_t tTaskIsRequestedDeleted (void);
 void tTaskDeleteSelf (void);
 void tTaskGetInfo (tTask * task, tTaskInfo * info);
+
 
 #endif

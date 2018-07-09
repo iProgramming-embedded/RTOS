@@ -1,28 +1,36 @@
 #include "tinyOS.h"
 
 
-void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack)
+void tTaskInit (tTask * task, void (*entry)(void *), void * param, uint32_t prio, tTaskStack * stack, uint32_t size)
 {
-	*(--stack) = (unsigned long)(1 << 24);
-	*(--stack) = (unsigned long)entry;
-	*(--stack) = (unsigned long)0x14;
-	*(--stack) = (unsigned long)0x12;
-	*(--stack) = (unsigned long)0x3;
-	*(--stack) = (unsigned long)0x2;
-	*(--stack) = (unsigned long)0x1;
-	*(--stack) = (unsigned long)param;
+	uint32_t * stackTop;
 	
-	*(--stack) = (unsigned long)0x11;
-	*(--stack) = (unsigned long)0x10;
-	*(--stack) = (unsigned long)0x9;
-	*(--stack) = (unsigned long)0x8;
-	*(--stack) = (unsigned long)0x7;
-	*(--stack) = (unsigned long)0x6;
-	*(--stack) = (unsigned long)0x5;
-	*(--stack) = (unsigned long)0x4;
+	task->stackBase = stack;
+	task->stackSize = size;
+	memset(stack, 0, size);
+	
+	stackTop = stack + size / sizeof(tTaskStack);
+	
+	*(--stackTop) = (unsigned long)(1 << 24);
+	*(--stackTop) = (unsigned long)entry;
+	*(--stackTop) = (unsigned long)0x14;
+	*(--stackTop) = (unsigned long)0x12;
+	*(--stackTop) = (unsigned long)0x3;
+	*(--stackTop) = (unsigned long)0x2;
+	*(--stackTop) = (unsigned long)0x1;
+	*(--stackTop) = (unsigned long)param;
+	
+	*(--stackTop) = (unsigned long)0x11;
+	*(--stackTop) = (unsigned long)0x10;
+	*(--stackTop) = (unsigned long)0x9;
+	*(--stackTop) = (unsigned long)0x8;
+	*(--stackTop) = (unsigned long)0x7;
+	*(--stackTop) = (unsigned long)0x6;
+	*(--stackTop) = (unsigned long)0x5;
+	*(--stackTop) = (unsigned long)0x4;
 	
 	task->slice = TINYOS_SLICE_MAX;
-	task->stack = stack;
+	task->stack = stackTop;
 	task->delayTicks = 0;
 	task->prio = prio;
 	task->state = TINYOS_TASK_STATE_RDY;
@@ -145,6 +153,7 @@ void tTaskDeleteSelf (void)
 }
 void tTaskGetInfo (tTask * task, tTaskInfo * info)
 {
+	uint32_t * stackEnd;
 	uint32_t status = tTaskEnterCritical();
 	
 	info->delayTicks = task->delayTicks;
@@ -152,6 +161,18 @@ void tTaskGetInfo (tTask * task, tTaskInfo * info)
 	info->state = task->state;
 	info->slice = task->slice;
 	info->suspendCount = task->suspendCount;
+	info->stackSize = task->stackSize;
+	
+	info->stackFree = 0;
+	stackEnd = task->stackBase;
+	while ((*stackEnd++ == 0) && (stackEnd <= task->stackBase + task->stackSize / sizeof(tTaskStack)))
+	{
+		info->stackFree++;
+	}
+	info->stackFree *= sizeof(tTaskStack);
 	
 	tTaskExitCritical(status);
 }
+
+
+
