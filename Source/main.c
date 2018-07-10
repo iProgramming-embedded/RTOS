@@ -10,8 +10,15 @@ tList taskTable[TINYOS_PRO_COUNT];
 
 uint8_t schedLockCount;
 
+uint32_t tickCount;
 tList tTaskDelayedList;
 
+uint32_t idleCount;
+uint32_t idleMaxCount;
+
+static void initCpuUsageStat (void);
+static void checkCpuUsage (void);
+static void cpuUsageSyncWithSysTick (void);
 
 tTask * tTaskHighestReady (void)
 {
@@ -127,6 +134,11 @@ void tTimeTaskRemove (tTask * task)
 	tListRemove(&tTaskDelayedList, &(task->delayNode));
 }
 
+void tTimeTickInit (void)
+{
+	tickCount = 0;
+}
+
 void tTaskSystemTickHandler ()
 {
 	tNode * node;
@@ -159,7 +171,10 @@ void tTaskSystemTickHandler ()
 			currentTask->slice = TINYOS_SLICE_MAX;
 		}
 	}
-		
+	
+	tickCount++;
+	checkCpuUsage();
+	
 	tTaskExitCritical(status);
 	
 	tTimerModuleTickNotify();
@@ -167,13 +182,78 @@ void tTaskSystemTickHandler ()
 	tTaskSched();
 }
 
+static float cpuUsage;
+static uint32_t enableCpuUsageState;
+
+static void initCpuUsageStat (void)
+{
+	idleCount = 0;
+	idleMaxCount = 0;
+	cpuUsage = 0.0f;
+	enableCpuUsageState = 0;
+}
+
+static void checkCpuUsage (void)
+{
+	if (enableCpuUsageState == 0)
+	{
+		enableCpuUsageState = 1;
+		tickCount = 0;
+		return;
+	}
+	
+	if (tickCount == TICKS_PER_SEC)
+	{
+		idleMaxCount = idleCount;
+		idleCount = 0;
+		
+		tTaskSchedEnable();
+	} 
+	else if (tickCount % TICKS_PER_SEC == 0)
+	{
+		cpuUsage = 100 - (idleCount * 100.0 / idleMaxCount);
+		idleCount = 0;
+	}
+}
+
+static void cpuUsageSyncWithSysTick (void)
+{
+	while (enableCpuUsageState == 0)
+	{
+		;;
+	}
+}
+
+float tCpuUsageGet (void)
+{
+	float usage = 0;
+	
+	uint32_t status = tTaskEnterCritical();
+	usage = cpuUsage;
+	tTaskExitCritical(status);
+	
+	return usage;
+}
 
 tTask tTaskIdle;
 tTaskStack idleTaskEnv[TINYOS_IDLETASK_STACK_SIZE];
 
 void idleTaskEntry (void * param) {
+	tTaskSchedDisable();
+	
+	tInitApp();
+	
+	tTimerInitTask();
+
+	tSetSysTickPeriod(TINYOS_SYSTICK_MS);
+	
+	cpuUsageSyncWithSysTick();
+	
 	for (;;)
 	{
+		uint32_t status = tTaskEnterCritical();
+		idleCount++;
+		tTaskExitCritical(status);
 	}
 }
 
@@ -185,7 +265,9 @@ int main ()
 	
 	tTimerModuleInit();
 	
-	tInitApp();
+	tTimeTickInit();
+	
+	initCpuUsageStat();
 	
 	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT - 1, idleTaskEnv, TINYOS_IDLETASK_STACK_SIZE);
 	idleTask = &tTaskIdle;

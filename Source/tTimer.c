@@ -1,5 +1,6 @@
 #include "tinyOS.h"
 
+
 static tList tTimerHardList;
 static tList tTimerSoftList;
 static tSem tTimerProtectSem;
@@ -100,6 +101,8 @@ void tTimerGetInfo (tTimer * timer, tTimerInfo * info)
 	
 	tTaskExitCritical(status);
 }
+
+
 static void tTimerCallFuncList (tList * timerList)
 {
 	tNode * node;
@@ -161,11 +164,12 @@ void tTimerModuleInit (void)
 	tSemInit(&tTimerProtectSem, 1, 1);
 	tSemInit(&tTimerTickSem, 0, 0);
 	
+}
+
+void tTimerInitTask (void)
+{
 #if TINYOS_TIMERTASK_PRIO >= (TINYOS_PRO_COUNT - 1)
 	#error "The proprity of timer tasker must be greater then (TINYOS_PRO_COUNT - 1)"
 #endif
 	tTaskInit(&tTimeTask, tTimerSoftTask, (void *)0, TINYOS_TIMERTASK_PRIO, tTimerTaskStack, TINYOS_TIMERTASK_STACK_SIZE);
 }
-
-
-

@@ -46,5 +46,5 @@ void tTimerDestroy (tTimer * timer);
 void tTimerGetInfo (tTimer * timer, tTimerInfo * info);
 void tTimerModuleTickNotify (void);
 void tTimerModuleInit (void);
-
+void tTimerInitTask (void);
 #endif
