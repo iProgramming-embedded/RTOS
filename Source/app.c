@@ -10,19 +10,15 @@ tTaskStack task2Env[1024];
 tTaskStack task3Env[1024];
 tTaskStack task4Env[1024];
 
-float cpuUage = 0.0f;
-
 int task1Flag;
 void task1Entry (void * param)
 {				
 	for (;;)
 	{	
 		task1Flag = 0;
-		//tTaskDelay(1);
+		tTaskDelay(1);
 		task1Flag = 1;
-		//tTaskDelay(1);
-		
-		cpuUage = tCpuUsageGet();
+		tTaskDelay(1);
 	}
 }
 

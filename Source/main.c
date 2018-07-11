@@ -16,9 +16,13 @@ tList tTaskDelayedList;
 uint32_t idleCount;
 uint32_t idleMaxCount;
 
+#if TINYOS_ENABLE_CPUUSAGE_STAT == 1
+
 static void initCpuUsageStat (void);
 static void checkCpuUsage (void);
 static void cpuUsageSyncWithSysTick (void);
+
+#endif
 
 tTask * tTaskHighestReady (void)
 {
@@ -173,15 +177,21 @@ void tTaskSystemTickHandler ()
 	}
 	
 	tickCount++;
+
+#if TINYOS_ENABLE_CPUUSAGE_STAT == 1
 	checkCpuUsage();
+#endif
 	
 	tTaskExitCritical(status);
 	
+#if TINYOS_ENABLE_TIMER == 1
 	tTimerModuleTickNotify();
+#endif
 	
 	tTaskSched();
 }
 
+#if TINYOS_ENABLE_CPUUSAGE_STAT == 1
 static float cpuUsage;
 static uint32_t enableCpuUsageState;
 
@@ -234,6 +244,7 @@ float tCpuUsageGet (void)
 	
 	return usage;
 }
+#endif
 
 tTask tTaskIdle;
 tTaskStack idleTaskEnv[TINYOS_IDLETASK_STACK_SIZE];
@@ -243,11 +254,15 @@ void idleTaskEntry (void * param) {
 	
 	tInitApp();
 	
+#if TINYOS_ENABLE_TIMER == 1
 	tTimerInitTask();
+#endif
 
 	tSetSysTickPeriod(TINYOS_SYSTICK_MS);
 	
+#if TINYOS_ENABLE_CPUUSAGE_STAT == 1
 	cpuUsageSyncWithSysTick();
+#endif
 	
 	for (;;)
 	{
@@ -263,11 +278,15 @@ int main ()
 	
 	tTaskDelayedInit();
 	
+#if TINYOS_ENABLE_TIMER == 1
 	tTimerModuleInit();
+#endif
 	
 	tTimeTickInit();
 	
+#if TINYOS_ENABLE_CPUUSAGE_STAT == 1
 	initCpuUsageStat();
+#endif
 	
 	tTaskInit(&tTaskIdle, idleTaskEntry, (void *)0, TINYOS_PRO_COUNT - 1, idleTaskEnv, TINYOS_IDLETASK_STACK_SIZE);
 	idleTask = &tTaskIdle;

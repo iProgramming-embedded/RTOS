@@ -1,6 +1,8 @@
 #include "tSem.h"
 #include "tinyOS.h"
 
+#if TINYOS_ENABLE_SEM == 1
+
 void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount)
 {
 	tEventInit(&sem->event, tEventTypeSem);
@@ -103,3 +105,7 @@ uint32_t tSemDestroy (tSem * sem)
 	
 	return count;
 }
+
+#endif
+
+
