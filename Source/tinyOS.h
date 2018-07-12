@@ -23,6 +23,8 @@
 
 #include "tTimer.h"
 
+#include "tHooks.h"
+
 
 #define	TICKS_PER_SEC			(1000 / TINYOS_SYSTICK_MS)
 

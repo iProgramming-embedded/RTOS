@@ -11,3 +11,5 @@
 .\objects\tmutex.o: Source\tFlagGroup.h
 .\objects\tmutex.o: Source\tMutex.h
 .\objects\tmutex.o: Source\tTimer.h
+.\objects\tmutex.o: Source\tHooks.h
+.\objects\tmutex.o: Source\tinyOS.h
